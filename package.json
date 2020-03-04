@@ -1,0 +1,20 @@
+{
+  "name": "food-delivery-app",
+  "version": "1.0.0",
+  "description": "First week project of arkademy bootcamp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "keywords": [
+    "Node.js",
+    "Express.js",
+    "Backend"
+  ],
+  "author": "Agus Richard Lubis",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
