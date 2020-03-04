@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 require('dotenv').config()
 
 // Import middlewares
-const { isAdminUser } = require('./src/middlewares/authUserToken')
+// const { isAdminUser } = require('./src/middlewares/authUserToken')
 
 
 // Init App
@@ -25,10 +25,10 @@ app.get('/', (req, res) => {
 
 
 // Routes
-app.use('/migrations', isAdminUser, require('./src/routes/migrations'))
-app.use('/auth', require('./src/routes/auth'))
-app.use('/foods', require('./src/routes/foods'))
-app.use('/restaurants', require('./src/routes/restaurants'))
+app.use('/migrations', require('./src/routes/migrations'))
+// app.use('/auth', require('./src/routes/auth'))
+// app.use('/foods', require('./src/routes/foods'))
+// app.use('/restaurants', require('./src/routes/restaurants'))
 
 
 // Port
