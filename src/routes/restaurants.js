@@ -1,6 +1,7 @@
 const router = require('express').Router()
 
 const { isUserAuthenticated, isAdminUser } = require('../middlewares/authUserToken')
+const { createRestaurant, getRestaurantById } = require('../controllers/restaurants')
 
 
 router.get('/', (req, res) => {
@@ -11,20 +12,9 @@ router.get('/', (req, res) => {
 })
 
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  res.status(200).json({
-    success: true,
-    msg: `You get one restaurant with id ${id}`
-  })
-})
+router.get('/:id', getRestaurantById)
 
-router.post('/', [isUserAuthenticated, isAdminUser], (req, res) => {
-  res.status(200).json({
-    success: true,
-    msg: 'You post restaurant'
-  })
-})
+router.post('/', [isUserAuthenticated], createRestaurant)
 
 router.delete('/:id', [isUserAuthenticated, isAdminUser], (req, res) => {
   const { id } = req.params
