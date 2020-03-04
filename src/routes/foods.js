@@ -1,12 +1,22 @@
 const router = require('express').Router()
 
-const { isUserAuthenticated } = require('../middlewares/authUserToken')
+const { isUserAuthenticated, isAdminUser } = require('../middlewares/authUserToken')
 
-router.get('/', [isUserAuthenticated], (req, res) => {
+router.get('/', [isUserAuthenticated, isAdminUser], (req, res) => {
   res.status(200).json({
     success: true,
-    msg: 'Foods is here'
+    msg: 'You will get the food'
   })
 })
+
+
+router.get('/:id', [isUserAuthenticated, isAdminUser], (req, res) => {
+  res.status(200).json({
+    success: true,
+    msg: 'You will get the food'
+  })
+})
+
+
 
 module.exports = router
