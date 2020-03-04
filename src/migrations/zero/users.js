@@ -5,6 +5,7 @@ db.query(
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(40),
     username VARCHAR(40),
+    email VARCHAR(40),
     password VARCHAR(60),
     date_created DATETIME,
     date_updated DATETIME

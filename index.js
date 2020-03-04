@@ -1,9 +1,18 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 require('dotenv').config()
 
+
+// Init App
 const app = express() 
 
 
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+
+// Root route
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -14,6 +23,7 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/migrations', require('./src/routes/migrations'))
+app.use('/auth', require('./src/routes/auth'))
 app.use('/foods', require('./src/routes/foods'))
 
 
