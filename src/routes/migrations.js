@@ -1,5 +1,8 @@
 const router = require('express').Router()
 
+
+//  ======================= Migration zero ===============================
+
 router.get('/zero/users', (req, res) => {
   require('../migrations/zero/users')
   res.status(200).json({
@@ -7,5 +10,7 @@ router.get('/zero/users', (req, res) => {
     msg: 'users table created successfully'
   })
 })
+
+
 
 module.exports = router

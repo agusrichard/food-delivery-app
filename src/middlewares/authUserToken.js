@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const isUserAuthenticated = (req, res, next) => {
   let token = req.headers.authorization || ''
-  console.log(token)
+  
   if (token.startsWith('Bearer')) {
     token = token.slice(7, token.length)
   } else {
@@ -16,7 +16,7 @@ const isUserAuthenticated = (req, res, next) => {
 
   try {
     req.auth = jwt.verify(token, process.env.APP_KEY)
-    console.log(req.auth)
+    
     next()
   } catch(err) {
     res.send({
@@ -28,7 +28,7 @@ const isUserAuthenticated = (req, res, next) => {
 
 const isAdminUser = (req, res, next) => {
   let token = req.headers.authorization || ''
-  console.log(token)
+  
   if (token.startsWith('Bearer')) {
     token = token.slice(7, token.length)
   } else {
@@ -41,11 +41,7 @@ const isAdminUser = (req, res, next) => {
   try {
     req.auth = jwt.verify(token, process.env.APP_KEY)
     const { username, email } = req.auth
-    console.log('In isAdminUser')
-    console.log('username: ' + username)
-    console.log('email: ' + email)
-    console.log('process.env.ADMIN_USERNAME: ' + process.env.ADMIN_USERNAME)
-    console.log('process.env.ADMIN_EMAIL: ' + process.env.ADMIN_EMAIL)
+ 
     if (username === process.env.ADMIN_USERNAME && email === process.env.ADMIN_EMAIL) {
       next()
     } else {
