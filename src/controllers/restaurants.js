@@ -10,7 +10,8 @@ const createRestaurant = async (req, res) => {
   console.log('Inside controllers/restaurants')
   console.log(userId, name, location, description)
   try {
-    await restaurantsModel.createRestaurant(userId, name, location, description)
+    const date = new Date()
+    await restaurantsModel.createRestaurant(userId, name, location, description, date)
 
     res.json({
       success: true,
@@ -129,6 +130,7 @@ const updateRestaurant = async (req, res) => {
   console.log(id, userId)
 
   try {
+    const date = new Date()
     const restaurant = await restaurantsModel.getRestaurantById(id)
     console.log(restaurant)
 
@@ -138,7 +140,8 @@ const updateRestaurant = async (req, res) => {
         const data = {
           name: name || restaurant.name,
           location: location || restaurant.location,
-          description: description || restaurant.description
+          description: description || restaurant.description,
+          date: date || restaurant.date_updated
         }
 
         await restaurantsModel.updateRestaurant(id, data)
@@ -150,7 +153,7 @@ const updateRestaurant = async (req, res) => {
       } else {
         res.json({
           success: false,
-          msg: 'You don\'t have permission to delete this restaurant'
+          msg: 'You don\'t have permission to update this restaurant'
         })
       }
     } else {

@@ -1,12 +1,19 @@
 const db = require('../config/db')
 
-const createRestaurant = (ownerId, name, location, description) => {
+const createRestaurant = (ownerId, name, location, description, date) => {
   console.log('In models/restaurants/createRestaurant')
   return new Promise((resolve, reject) => {
     db.query(
       `
-        INSERT INTO restaurants(name, location, description, owner_id)
-        VALUES(${db.escape(name)}, ${db.escape(location)}, ${db.escape(description)}, ${db.escape(ownerId)})
+        INSERT INTO restaurants(name, location, description, owner_id, date_created, date_updated)
+        VALUES(
+          ${db.escape(name)}, 
+          ${db.escape(location)}, 
+          ${db.escape(description)}, 
+          ${db.escape(ownerId)},
+          ${db.escape(date)},
+          ${db.escape(date)}
+        );
       `,
       (error, results, fields) => {
         if (error) reject(error)
@@ -81,7 +88,7 @@ const updateRestaurant = (id, data) => {
     db.query(
       `
         UPDATE restaurants
-        SET name=${db.escape(data.name)}, location=${db.escape(data.location)}, description=${db.escape(data.description)}
+        SET name=${db.escape(data.name)}, location=${db.escape(data.location)}, description=${db.escape(data.description)}, date_updated=${db.escape(data.date)}
         WHERE id=${db.escape(id)};
       `,
       (error, results, fields) => {
