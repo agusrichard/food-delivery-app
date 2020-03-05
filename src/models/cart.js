@@ -24,6 +24,7 @@ const getItemsInCart = (userId) => {
   })   
 }
 
+
 const addItemsToCart = (userId, listOfItems) => {
   console.log('Inside models/cart/addItemsToCart')
   console.log(userId, listOfItems)
@@ -32,6 +33,25 @@ const addItemsToCart = (userId, listOfItems) => {
     itemId => `INSERT INTO item_carts(user_id, item_id) VALUES (${userId}, ${itemId})`
   ).join('; ')
   console.log(query)
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      if (error) reject(error)
+      resolve()
+    })
+  })
+}
+
+const deleteCart = (userId) => {
+  console.log('Inside models/cart/deleteCart')
+  console.log(userId)
+
+  const query = `
+    DELETE FROM items_cart
+    WHERE user_id=${db.escape(userId)}
+  `
+  console.log(query)
+
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
       if (error) reject(error)
@@ -41,4 +61,4 @@ const addItemsToCart = (userId, listOfItems) => {
 }
 
 
-module.exports = { getItemsInCart, addItemsToCart }
+module.exports = { getItemsInCart, addItemsToCart, deleteCart }

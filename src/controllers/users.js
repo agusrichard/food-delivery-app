@@ -103,7 +103,7 @@ const topUp = async (req, res) => {
       console.log(user.balance == null)
       let userBalance = user.balance == null ? 0 : user.balance
       let newBalance = parseInt(userBalance) + parseInt(amount)
-      await usersModel.topUp(username, newBalance)
+      await usersModel.updateBalance(username, newBalance)
       res.json({
         success: true,
         msg: 'Topup success'

@@ -108,7 +108,7 @@ const addAdminUser = (id, username) => {
   })
 }
 
-const topUp = (username, balance) => {
+const updateBalance = (username, balance) => {
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -131,5 +131,5 @@ module.exports = {
   deleteUser, 
   addAdminUser, 
   changeProfile,
-  topUp 
+  updateBalance 
 }

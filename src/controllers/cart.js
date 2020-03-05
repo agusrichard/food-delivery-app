@@ -1,4 +1,5 @@
 const cartModel = require('../models/cart')
+const usersModel = require('../models/users')
 
 
 const getItemsInCart = async (req, res) => {
@@ -6,10 +7,22 @@ const getItemsInCart = async (req, res) => {
   console.log('Inside controllers/cart/getItemsInCart')
   try {
     const items = await cartModel.getItemsInCart(userId)
+
+    if (items) {
+      res.json({
+        success: true,
+        items
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: 'You don\'t have items in your cart'
+      })
+    }
   } catch(err) {
     res.json({
       success: false,
-      msg: 'Failed to load items in cart'
+      msg: 'Failed to load items in cart',
     })
   }
 }
@@ -35,4 +48,47 @@ const addItemsToCart = async (req, res) => {
 }
 
 
-module.exports = { getItemsInCart, addItemsToCart }
+const checkout = async (req, res) => {
+  const { userId, username } = req.auth
+  console.log('Inside controllers/cart/checkOut')
+
+  try {
+    const items = await cartModel.getItemsInCart(userId)
+    const user = await usersModel.getUserByUsername(username)
+
+    if (user && items) {
+      const expenses = items.map(item => item.price).reduce((prev, curr) => prev + curr)
+
+      if (user.balance >= expenses) {
+        const newBalance = user.balance - expenses
+
+        await usersModel.updateBalance(username, newBalance)
+        await cartModel.deleteCart(userId)
+        res.json({
+          success: true,
+          data: items,
+          currentBalance: newBalance,
+          expenses, 
+        })
+      } else {
+        res.json({
+          success: false,
+          msg: 'Your balance less than your expenses'
+        })
+      }
+    } else {
+      res.json({
+        success: false,
+        msg: 'Can\'t checkout the cart'
+      })
+    }
+  } catch(err) {
+    res.json({
+      success: false,
+      msg: 'Failed to check out the cart'
+    })
+  }
+}
+
+
+module.exports = { getItemsInCart, addItemsToCart, checkout }
