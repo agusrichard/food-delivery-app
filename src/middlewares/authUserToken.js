@@ -40,9 +40,9 @@ const isAdminUser = (req, res, next) => {
 
   try {
     req.auth = jwt.verify(token, process.env.APP_KEY)
-    const { username, email } = req.auth
+    const { roleId } = req.auth
  
-    if (username === process.env.ADMIN_USERNAME && email === process.env.ADMIN_EMAIL) {
+    if ( parseInt(roleId) === 1 ) {
       next()
     } else {
       res.json({

@@ -1,7 +1,7 @@
 const db = require('../config/db')
 
 
-const createUser = (name, username, email, password, date_created) => {
+const createUser = (name, username, email, password) => {
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -17,8 +17,9 @@ const createUser = (name, username, email, password, date_created) => {
             resolve(false)
           } else {
             db.query(`
-              INSERT INTO users(username, email, password) 
+              INSERT INTO users(full_name, username, email, password) 
               VALUES(
+                ${db.escape(name)},
                 ${db.escape(username)}, 
                 ${db.escape(email)}, 
                 ${db.escape(password)}
@@ -69,4 +70,21 @@ const deleteUser = (id) => {
 }
 
 
-module.exports = { createUser, getUserByUsername, deleteUser }
+const addAdminUser = (id, username) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `
+        UPDATE users
+        SET role_id=1
+        WHERE id=${db.escape(parseInt(id))} AND username=${db.escape(username)};
+      `,
+      (error, results, fields) => {
+        if (error) reject(error)
+        else resolve()
+      }
+    )
+  })
+}
+
+
+module.exports = { createUser, getUserByUsername, deleteUser, addAdminUser }

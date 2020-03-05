@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 
 
 // Routes
-app.use('/migrations', require('./src/routes/migrations'))
+app.use('/migrations', isAdminUser, require('./src/routes/migrations'))
 app.use('/auth', require('./src/routes/auth'))
 app.use('/restaurants', require('./src/routes/restaurants'))
 // app.use('/foods', require('./src/routes/foods'))

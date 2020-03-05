@@ -12,7 +12,7 @@ const register = async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password);
 
     try {
-      const canCreate = await usersModel.createUser(name, username, email, hashedPassword, date)
+      const canCreate = await usersModel.createUser(name, username, email, hashedPassword)
       if (canCreate) {
         res.json({
           status: true,
@@ -53,9 +53,10 @@ const login = async (req, res) => {
           const data = {
             userId: user.id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            roleId: user.role_id
           }
-          const token = jwt.sign(data, process.env.APP_KEY, {expiresIn: '60m'})
+          const token = jwt.sign(data, process.env.APP_KEY, { expiresIn: '60m' })
           res.json({
             success: true,
             msg: 'Login success',
