@@ -85,5 +85,34 @@ const deleteUser = async (req, res) => {
   }
 }
 
+const topUp = async (req, res) => {
+  const { username } = req.auth
+  const { amount } = req.body
 
-module.exports = { userProfile, changeProfile }
+  try {
+    const user = await usersModel.getUserByUsername(username)
+
+    if (user) {
+      let userBalance = user.balance == null ? 0 : user.balance
+      let newAmount = parseInt(userBalance) + parseInt(amount)
+      await usersModel.topUp(username, newAmount)
+      res.json({
+        success: true,
+        msg: 'Topup success'
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: 'Not allowed'
+      })
+    }
+  } catch(err) {
+    res.json({
+      success: false,
+      msg: 'Failed to topup'
+    })
+  }
+}
+
+
+module.exports = { userProfile, changeProfile, deleteUser, topUp }

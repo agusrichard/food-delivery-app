@@ -107,11 +107,28 @@ const addAdminUser = (id, username) => {
   })
 }
 
+const topUp = (username, amount) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `
+        UPDATE users
+        SET balance=${db.escape(parseInt(amount))}
+        WHERE username=${db.escape(username)};
+      `,
+      (error, results, fields) => {
+        if (error) reject(error)
+        else resolve()
+      }
+    )
+  })
+}
+
 
 module.exports = { 
   createUser, 
   getUserByUsername, 
   deleteUser, 
   addAdminUser, 
-  changeProfile 
+  changeProfile,
+  topUp 
 }
