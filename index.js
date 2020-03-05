@@ -30,6 +30,7 @@ app.use('/auth', require('./src/routes/auth'))
 app.use('/users', require('./src/routes/users'))
 app.use('/restaurants', require('./src/routes/restaurants'))
 app.use('/items', require('./src/routes/items'))
+app.use('/cart', require('./src/routes/cart'))
 
 
 
