@@ -1,20 +1,17 @@
 const db = require('../../config/db')
 
 db.query(
-  `CREATE TABLE users (
+  `CREATE TABLE item_carts (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    role_id INT,
-    username VARCHAR(40),
-    email VARCHAR(40),
-    password VARCHAR(60),
+    user_id INT,
+    item_id INT,
     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    full_name VARCHAR(70),
-    profile_picture TEXT,
-    balance INT
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY(item_id) REFERENCES items(id) ON DELETE CASCADE
   );`,
   (error, results, fields) => {
     if (error) throw error
-    else console.log('users table is created successfully')
+    else console.log('item_carts table is created successfully')
   }
 )

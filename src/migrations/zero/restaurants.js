@@ -8,8 +8,8 @@ db.query(
     location TEXT,
     description TEXT,
     owner_id INT,
-    date_created DATETIME,
-    date_updated DATETIME
+    date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP
   );`,
   (error, results, fields) => {
     if (error) throw error

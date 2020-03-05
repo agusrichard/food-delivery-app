@@ -1,18 +1,18 @@
 const db = require('../../config/db')
 
 db.query(
-  `CREATE TABLE foods (
+  `CREATE TABLE items (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    id_restaurant INT,
+    restaurant_id INT,
     name VARCHAR(40),
     price INT,
     images TEXT,
     description TEXT,
-    date_created DATETIME,
-    date_updated DATETIME
+    date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP
   );`,
   (error, results, fields) => {
     if (error) throw error
-    else console.log('foods table is created successfully')
+    else console.log('items table is created successfully')
   }
 )

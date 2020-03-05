@@ -17,14 +17,12 @@ const createUser = (name, username, email, password, date_created) => {
             resolve(false)
           } else {
             db.query(`
-            INSERT INTO users(username, email, password, date_created, date_updated) 
-            VALUES(
-              ${db.escape(username)}, 
-              ${db.escape(email)}, 
-              ${db.escape(password)}, 
-              ${db.escape(date_created)}, 
-              ${db.escape(date_created)}
-            );
+              INSERT INTO users(username, email, password) 
+              VALUES(
+                ${db.escape(username)}, 
+                ${db.escape(email)}, 
+                ${db.escape(password)}
+              );
             `,
             (error, results, fields) => {
               if (error) reject(error)
@@ -55,4 +53,20 @@ const getUserByUsername = (username) => {
 }
 
 
-module.exports = { createUser, getUserByUsername }
+const deleteUser = (id) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `
+        DELETE FROM users
+        WHERE id=${db.escape(parseInt(id))};
+      `,
+      (error, results, fields) => {
+        if (error) reject(error)
+        else resolve()
+      }
+    )
+  })
+}
+
+
+module.exports = { createUser, getUserByUsername, deleteUser }

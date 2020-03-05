@@ -11,6 +11,22 @@ router.get('/zero/users', (req, res) => {
   })
 })
 
+router.get('/zero/user-roles', (req, res) => {
+  require('../migrations/zero/userRoles')
+  res.status(200).json({
+    success: true,
+    msg: 'user_roles table is created successfully'
+  })
+})
+
+router.get('/zero/alter-users', (req, res) => {
+  require('../migrations/zero/alterUsers')
+  res.status(200).json({
+    success: true,
+    msg: 'Altering users table is success'
+  })
+})
+
 
 router.get('/zero/restaurants', (req, res) => {
   require('../migrations/zero/restaurants')
@@ -21,11 +37,11 @@ router.get('/zero/restaurants', (req, res) => {
 })
 
 
-router.get('/zero/foods', (req, res) => {
-  require('../migrations/zero/foods')
+router.get('/zero/items', (req, res) => {
+  require('../migrations/zero/items')
   res.status(200).json({
     success: true,
-    msg: 'foods table is created succesfully'
+    msg: 'items table is created succesfully'
   })
 })
 
@@ -39,38 +55,47 @@ router.get('/zero/alter-restaurants', (req, res) => {
 })
 
 
-router.get('/zero/alter-foods', (req, res) => {
-  require('../migrations/zero/alterFoods')
+router.get('/zero/alter-items', (req, res) => {
+  require('../migrations/zero/alterItems')
   res.status(200).json({
     success: true,
-    msg: 'Altering foods table is success'
+    msg: 'Altering items table is success'
   })
 })
 
 
-router.get('/zero/food-reviews', (req, res) => {
-  require('../migrations/zero/foodReviews')
+router.get('/zero/item-reviews', (req, res) => {
+  require('../migrations/zero/itemReviews')
   res.status(200).json({
     success: true,
-    msg: 'food_reviews table is created successfully'
+    msg: 'item_reviews table is created successfully'
   })
 })
 
 
-router.get('/zero/food-categories', (req, res) => {
-  require('../migrations/zero/foodCategories')
+router.get('/zero/item-categories', (req, res) => {
+  require('../migrations/zero/itemCategories')
   res.status(200).json({
     success: true,
-    msg: 'food_categories table is created successfully'
+    msg: 'item_categories table is created successfully'
   })
 })
 
 
-router.get('/zero/food-carts', (req, res) => {
-  require('../migrations/zero/foodCarts')
+router.get('/zero/item-carts', (req, res) => {
+  require('../migrations/zero/itemCarts')
   res.status(200).json({
     success: true,
-    msg: 'food_carts table is created successfully'
+    msg: 'item_carts table is created successfully'
+  })
+})
+
+
+router.get('/one/add-admin-role', (req, res) => {
+  require('../migrations/one/addAdminRole')
+  res.status(200).json({
+    success: true, 
+    msg: 'add admin role'
   })
 })
 
