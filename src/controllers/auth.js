@@ -43,12 +43,18 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body
 
+  console.log('Inside /contollers/auth/login')
+  console.log(username)
+  console.log(password)
+
   if (username && password) {
     try {
       // Get user with username
       const user = await usersModel.getUserByUsername(username)
+      console.log('user' + user)
 
       if (user) {
+        console.log('Inside user if statement')
         if (bcrypt.compareSync(password, user.password)) {
           const data = {
             userId: user.id,
@@ -71,7 +77,7 @@ const login = async (req, res) => {
       } else {
         res.json({
           success: false,
-          msg: `There is no user with username ${user.username}`
+          msg: `There is no user with username ${username}`
         })
       }
     } catch(err) {

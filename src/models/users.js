@@ -47,7 +47,8 @@ const getUserByUsername = (username) => {
       (error, results, fields) => {
         if (error) reject(error)
         console.log('In getUserByUsername, results: ' + results)
-        resolve(results[0])
+        if (results) resolve(results[0])
+        else resolve(false)
       }
     )
   })

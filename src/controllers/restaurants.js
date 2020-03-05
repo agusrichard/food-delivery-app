@@ -10,8 +10,7 @@ const createRestaurant = async (req, res) => {
   console.log('Inside controllers/restaurants')
   console.log(userId, name, location, description)
   try {
-    const date = new Date()
-    await restaurantsModel.createRestaurant(userId, name, location, description, date)
+    await restaurantsModel.createRestaurant(userId, name, location, description)
 
     res.json({
       success: true,
@@ -123,7 +122,7 @@ const getRestaurantById = async (req, res) => {
 
 const updateRestaurant = async (req, res) => {
   const { id } = req.params
-  const { userId, username } = req.auth
+  const { userId, roleId } = req.auth
   const { name, location, description } = req.body
 
   console.log('Inside controllers/restaurants/updateRestaurant')
@@ -135,7 +134,7 @@ const updateRestaurant = async (req, res) => {
     console.log(restaurant)
 
     if (restaurant) {
-      if (userId === restaurant.owner_id || username === process.env.ADMIN_USERNAME) {
+      if (userId === restaurant.owner_id || parseInt(roleId) === 1) {
         
         const data = {
           name: name || restaurant.name,
@@ -174,7 +173,7 @@ const updateRestaurant = async (req, res) => {
 
 const deleteRestaurant = async (req, res) => {
   const { id } = req.params
-  const { userId, username } = req.auth
+  const { userId, roleId } = req.auth
 
   console.log('Inside controllers/restaurants/deleteRestaurant')
   console.log(id, userId)
@@ -184,7 +183,7 @@ const deleteRestaurant = async (req, res) => {
     console.log(restaurant)
 
     if (restaurant) {
-      if (userId === restaurant.owner_id || username === process.env.ADMIN_USERNAME) {
+      if (userId === restaurant.owner_id || parseInt(roleId) === 1) {
         await restaurantsModel.deleteRestaurant(id)
         res.json({
           success: true,
