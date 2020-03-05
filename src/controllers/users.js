@@ -30,16 +30,21 @@ const changeProfile = async (req, res) => {
   const { username } = req.auth
   const { email, full_name, profile_picture } = req.body
 
+  console.log('Inside controllers/users/changeProfile')
+  console.log(email, full_name, profile_picture)
+
   try {
     const user = await usersModel.getUserByUsername(username)
+    console.log(user)
     if (user) {
       const data = {
         email: email || user.email,
         full_name: full_name || user.full_name,
         profile_picture: profile_picture || user.profile_picture
       }
-
-      await usersModel.changeProfile(data)
+      
+      console.log(data)
+      await usersModel.changeProfile(user.id, data)
       res.json({
         success: true,
         msg: 'Update user\'s profile is success'
@@ -93,9 +98,12 @@ const topUp = async (req, res) => {
     const user = await usersModel.getUserByUsername(username)
 
     if (user) {
+      console.log('Inside controllers/users/topUp')
+      console.log(user.balance)
+      console.log(user.balance == null)
       let userBalance = user.balance == null ? 0 : user.balance
-      let newAmount = parseInt(userBalance) + parseInt(amount)
-      await usersModel.topUp(username, newAmount)
+      let newBalance = parseInt(userBalance) + parseInt(amount)
+      await usersModel.topUp(username, newBalance)
       res.json({
         success: true,
         msg: 'Topup success'

@@ -55,7 +55,8 @@ const getUserByUsername = (username) => {
 }
 
 
-const changeProfile = (data) => {
+const changeProfile = (userId, data) => {
+  console.log('Inside models/users/changeProfile')
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -64,7 +65,7 @@ const changeProfile = (data) => {
           email=${db.escape(data.email)}, 
           full_name=${db.escape(data.full_name)}, 
           profile_picture=${db.escape(data.profile_picture)}
-        WHERE id=${db.escape(id)};
+        WHERE id=${db.escape(userId)};
       `,
       (error, results, fields) => {
         if (error) reject(error)
@@ -107,12 +108,12 @@ const addAdminUser = (id, username) => {
   })
 }
 
-const topUp = (username, amount) => {
+const topUp = (username, balance) => {
   return new Promise((resolve, reject) => {
     db.query(
       `
         UPDATE users
-        SET balance=${db.escape(parseInt(amount))}
+        SET balance=${db.escape(parseInt(balance))}
         WHERE username=${db.escape(username)};
       `,
       (error, results, fields) => {
