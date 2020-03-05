@@ -55,6 +55,26 @@ const getUserByUsername = (username) => {
 }
 
 
+const changeProfile = (data) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `
+        UPDATE users
+        SET 
+          email=${db.escape(data.email)}, 
+          full_name=${db.escape(data.full_name)}, 
+          profile_picture=${db.escape(data.profile_picture)}
+        WHERE id=${db.escape(id)};
+      `,
+      (error, results, fields) => {
+        if (error) reject(error)
+        else resolve()
+      }
+    )
+  })
+}
+
+
 const deleteUser = (id) => {
   return new Promise((resolve, reject) => {
     db.query(
@@ -88,4 +108,10 @@ const addAdminUser = (id, username) => {
 }
 
 
-module.exports = { createUser, getUserByUsername, deleteUser, addAdminUser }
+module.exports = { 
+  createUser, 
+  getUserByUsername, 
+  deleteUser, 
+  addAdminUser, 
+  changeProfile 
+}

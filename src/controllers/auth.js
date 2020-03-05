@@ -95,17 +95,4 @@ const login = async (req, res) => {
 }
 
 
-const updateUser = async (req, res) => {
-  console.log('updateUser')
-}
-
-
-const deleteUser = async (req, res) => {
-  const { id } = req.params
-  const { username } = req.auth
-
-  
-}
-
-
-module.exports = { register, login, updateUser, deleteUser }
+module.exports = { register, login }
