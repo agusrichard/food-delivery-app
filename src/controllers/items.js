@@ -225,4 +225,10 @@ const deleteItem = async (req, res) => {
 }
 
 
-module.exports = { createItem, getAllItems, getItemById, updateItem, deleteItem }
+module.exports = { 
+  createItem, 
+  getAllItems, 
+  getItemById, 
+  updateItem, 
+  deleteItem 
+}
