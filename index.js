@@ -34,7 +34,6 @@ app.use('/cart', require('./src/routes/cart'))
 app.use('/categories', require('./src/routes/categories'))
 
 
-
 // Port
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Server is running on port ${port}`))

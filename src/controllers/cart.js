@@ -9,7 +9,7 @@ const getItemsInCart = async (req, res) => {
     const { results, total } = await cartModel.getItemsInCart(userId)
     const expenses = results.map(item => item.price).reduce((prev, curr) => prev + curr)
 
-    if (items) {
+    if (results) {
       res.json({
         success: true,
         total_items: total,
@@ -53,13 +53,16 @@ const addItemsToCart = async (req, res) => {
 
 const checkout = async (req, res) => {
   const { userId, username } = req.auth
-  console.log('Inside controllers/cart/checkOut')
+  console.log('Inside controllers/cart/checkout')
 
   try {
     const { results, total } = await cartModel.getItemsInCart(userId)
     const user = await usersModel.getUserByUsername(username)
+    console.log(results)
+    console.log(total)
+    console.log(user)
 
-    if (user && items) {
+    if (user && results) {
       const expenses = results.map(item => item.price).reduce((prev, curr) => prev + curr)
 
       if (user.balance >= expenses) {
@@ -70,9 +73,9 @@ const checkout = async (req, res) => {
         res.json({
           success: true,
           total_items: total,
-          items: results,
           currentBalance: newBalance,
-          expenses, 
+          expenses,
+          items: results 
         })
       } else {
         res.json({
