@@ -1,15 +1,17 @@
 const db = require('../config/db')
 
 
-const createItem = (restaurantId, name, price, description) => {
+const createItem = (restaurantId, name, price, description, categoryId) => {
   console.log('In models/items/createItem')
+  
   const query = `
-    INSERT INTO items(restaurant_id, name, price, description)
+    INSERT INTO items(restaurant_id, name, price, description, category_id)
     VALUES(
       ${db.escape(restaurantId)}, 
       ${db.escape(name)}, 
       ${db.escape(price)}, 
-      ${db.escape(description)}
+      ${db.escape(description)},
+      ${db.escape(categoryId)}
     );
   `
 
@@ -17,10 +19,9 @@ const createItem = (restaurantId, name, price, description) => {
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
-        if (error) reject(error)
-        else resolve()
-      }
-    )
+      if (error) reject(error)
+      else resolve()
+    })
   })
 }
 

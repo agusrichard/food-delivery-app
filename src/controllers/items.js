@@ -1,11 +1,12 @@
 const qs = require('qs')
 const itemsModel = require('../models/items')
 const restaurantsModel = require('../models/restaurants')
+const categoriesModel = require('../models/categories')
 
 
 const createItem = async (req, res) => {
   const { userId, roleId } = req.auth
-  const { restaurantId, name, price, description } = req.body
+  const { restaurantId, name, price, description, category } = req.body
   console.log('Inside controllers/items/createItem')
   console.log(userId, restaurantId, name, price, description)
   
@@ -13,18 +14,28 @@ const createItem = async (req, res) => {
   if (restaurantId && name && price && description) {
     try {
       const restaurant = await restaurantsModel.getRestaurantById(restaurantId)
-
       if (restaurant) {
-        if (parseInt(userId) === restaurant.owner_id || parseInt(roleId) === 1) {
-          await itemsModel.createItem(restaurantId, name, price, description)
+        let itemCategory = await categoriesModel.getCategoryByName(category)
+        if (itemCategory) {
+          if (parseInt(userId) === restaurant.owner_id || parseInt(roleId) === 1) {
+            await itemsModel.createItem(restaurantId, name, price, description, itemCategory.id)
+            res.json({
+              success: true,
+              msg: 'Item is created successfully'
+            })
+          } else {
+            res.json({
+              success: false,
+              msg: `Can't create item`
+            })
+          }
+        } else {
+          await categoriesModel.createCategory(category)
+          itemCategory = await categoriesModel.getCategoryByName(category)
+          await itemsModel.createItem(restaurantId, name, price, description, itemCategory.id)
           res.json({
             success: true,
             msg: 'Item is created successfully'
-          })
-        } else {
-          res.json({
-            success: false,
-            msg: `Can't create item`
           })
         }
       } else {
