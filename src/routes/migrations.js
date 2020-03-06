@@ -138,4 +138,13 @@ router.post('/add-admin-user', async (req, res) => {
 })
 
 
+router.get('/one/alter-items', (req, res) => {
+  require('../migrations/one/alterItems')
+  res.status(200).json({
+    success: true,
+    msg: 'Altering items table is success'
+  })
+})
+
+
 module.exports = router

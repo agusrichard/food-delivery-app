@@ -6,7 +6,7 @@ const createCategory = (name, listOfItems) => {
 
   const query = listOfItems.map(
     itemId => `INSERT INTO item_categories(name, item_id) VALUES (${db.escape(name)}, ${db.escape(itemId)})`
-  ).join('; ')
+  ).join('; ').concat(';')
   console.log(query)
 
   return new Promise((resolve, reject) => {
