@@ -38,13 +38,19 @@ const getAllRestaurants = (params) => {
 
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT *
-      FROM restaurants
-      ${conditions};`,
+      `SELECT COUNT(*) AS total
+      from restaurants`,
       (error, results, fields) => {
-        if (error) reject(error)
-        const total = results.length
-        resolve({ results, total })
+        const total = results[0].total
+        db.query(
+          `SELECT *
+           FROM restaurants
+           ${conditions};`,
+           (error, results, fields) => {
+             if (error) reject(error)
+             resolve({ results, total })
+           }
+        )
       }
     )
   })

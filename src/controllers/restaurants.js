@@ -25,7 +25,7 @@ const createRestaurant = async (req, res) => {
 }
 
 const getAllRestaurants = async (req, res) => {
-  // Parameters to specify how to fetch all restaurans
+  // Parameters to specify how to fetch all users
   const params = {
     currentPage: parseInt(req.query.page) || 1,
     perPage: parseInt(req.query.limit) || 5,
@@ -42,12 +42,12 @@ const getAllRestaurants = async (req, res) => {
   }
 
   // Create sort parameters
-  const sortKey = Object.keys(params.sort)
+  const sortKeys = Object.keys(params.sort)
   if (req.query.sort) {
-    params.sort = sortKey.map((v, i) => {
-      return { key: sortKey[i], value: req.query.sort[sortKey[i]] }
+    params.sort = sortKeys.map((v, i) => {
+      return { key: sortKeys[i], value: req.query.sort[sortKeys[i]] }
     })[0]
-  }
+  } 
 
   try {
     const { results, total } = await restaurantsModel.getAllRestaurants(params)
@@ -83,17 +83,17 @@ const getAllRestaurants = async (req, res) => {
       totalEntries: total
     }
 
-    res.json({
+    res.send({
       success: true,
       data: results,
       pagination
     })
   } catch(err) {
-    res.json({
+    res.send({
       success: false,
       msg: 'There is an error occured ' + err
     })
-  } 
+  }
 }
 
 
