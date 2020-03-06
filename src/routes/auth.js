@@ -5,8 +5,6 @@ const { isUserAuthenticated } = require('../middlewares/authUserToken')
 
 router.post('/register', register)
 router.post('/login', login)
-// router.patch('/update/:id', [isUserAuthenticated], updateUser)
-// router.delete('/delete/:id', deleteUser)
 
 
 module.exports = router

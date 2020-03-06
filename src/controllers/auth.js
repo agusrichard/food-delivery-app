@@ -21,7 +21,7 @@ const register = async (req, res) => {
       } else {
         res.json({
           status: false,
-          msg: 'Username is taken'
+          msg: 'Username is already taken'
         })
       }
     } catch(err) {

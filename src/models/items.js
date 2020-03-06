@@ -35,26 +35,30 @@ const getAllItems = (params) => {
     LIMIT ${perPage}
     OFFSET ${(currentPage - 1) * perPage}
   `
-
   console.log(conditions)
 
-  const query = `
+  const selectTotal = `
+    SELECT COUNT(*) AS total
+    from items
+  `
+
+  const selectItems = `
     SELECT *
     FROM items
     ${conditions};
   `
 
-  console.log(query)
-
   return new Promise((resolve, reject) => {
-    db.query(query, (error, results, fields) => {
+    db.query(selectTotal, (error, results, fields) => {
+      const total = results[0].total
+      db.query(selectItems, (error, results, fields) => {
         if (error) reject(error)
-        const total = results.length
         resolve({ results, total })
-      }
-    )
+      })
+    })
   })
 }
+
 
 const getItemById = (id) => {
   console.log('In models/items/getItemById')
@@ -90,6 +94,7 @@ const updateItem = (id, data) => {
       description=${db.escape(data.description)}
     WHERE id=${db.escape(id)};
   `
+  
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
         if (error) reject(error)

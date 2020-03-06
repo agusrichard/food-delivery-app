@@ -31,7 +31,7 @@ const changeProfile = async (req, res) => {
   const { email, full_name, profile_picture } = req.body
 
   console.log('Inside controllers/users/changeProfile')
-  console.log(email, full_name, profile_picture)
+  console.log(full_name)
 
   try {
     const user = await usersModel.getUserByUsername(username)
