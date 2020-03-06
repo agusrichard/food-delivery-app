@@ -6,17 +6,20 @@ const getItemsInCart = async (req, res) => {
   const { userId } = req.auth
   console.log('Inside controllers/cart/getItemsInCart')
   try {
-    const items = await cartModel.getItemsInCart(userId)
+    const { results, total } = await cartModel.getItemsInCart(userId)
+    const expenses = results.map(item => item.price).reduce((prev, curr) => prev + curr)
 
     if (items) {
       res.json({
         success: true,
-        items
+        total_items: total,
+        expenses,
+        items: results
       })
     } else {
       res.json({
         success: false,
-        msg: 'You don\'t have items in your cart'
+        msg: 'You don\'t have any item in your cart'
       })
     }
   } catch(err) {
@@ -53,11 +56,11 @@ const checkout = async (req, res) => {
   console.log('Inside controllers/cart/checkOut')
 
   try {
-    const items = await cartModel.getItemsInCart(userId)
+    const { results, total } = await cartModel.getItemsInCart(userId)
     const user = await usersModel.getUserByUsername(username)
 
     if (user && items) {
-      const expenses = items.map(item => item.price).reduce((prev, curr) => prev + curr)
+      const expenses = results.map(item => item.price).reduce((prev, curr) => prev + curr)
 
       if (user.balance >= expenses) {
         const newBalance = user.balance - expenses
@@ -66,7 +69,8 @@ const checkout = async (req, res) => {
         await cartModel.deleteCart(userId)
         res.json({
           success: true,
-          data: items,
+          total_items: total,
+          items: results,
           currentBalance: newBalance,
           expenses, 
         })

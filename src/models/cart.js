@@ -30,7 +30,7 @@ const addItemsToCart = (userId, listOfItems) => {
   console.log(userId, listOfItems)
 
   const query = listOfItems.map(
-    itemId => `INSERT INTO item_carts(user_id, item_id) VALUES (${userId}, ${itemId})`
+    itemId => `INSERT INTO item_carts(user_id, item_id) VALUES (${db.escape(userId)}, ${db.escape(itemId)})`
   ).join('; ')
   console.log(query)
 
@@ -47,7 +47,7 @@ const deleteCart = (userId) => {
   console.log(userId)
 
   const query = `
-    DELETE FROM items_cart
+    DELETE FROM item_carts
     WHERE user_id=${db.escape(userId)}
   `
   console.log(query)
