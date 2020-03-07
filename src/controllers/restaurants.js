@@ -1,6 +1,7 @@
 const qs = require('qs')
 const restaurantsModel = require('../models/restaurants')
 const usersModel = require('../models/users')
+const { paginate, paginationParams } = require('../utilities/pagination')
 require('dotenv').config()
 
 
@@ -32,69 +33,16 @@ const createRestaurant = async (req, res) => {
   }
 }
 
-const getAllRestaurants = async (req, res) => {
-  // Parameters to specify how to fetch all users
-  const params = {
-    currentPage: parseInt(req.query.page) || 1,
-    perPage: parseInt(req.query.limit) || 5,
-    search: req.query.search || '',
-    sort: req.query.sort || { key: 'id', value: 0 }
-  }
-
-  // Create search parameters
-  const searchKeys = Object.keys(params.search)
-  if (req.query.search) {
-    params.search = searchKeys.map((v, i) => {
-      return { key: searchKeys[i], value: req.query.search[searchKeys[i]] }
-    })
-  }
-
-  // Create sort parameters
-  const sortKeys = Object.keys(params.sort)
-  if (req.query.sort) {
-    params.sort = sortKeys.map((v, i) => {
-      return { key: sortKeys[i], value: req.query.sort[sortKeys[i]] }
-    })[0]
-  } 
-
+const getAllRestaurants = async (req, res) => { 
   try {
+    const params = paginationParams(req)
     const { results, total } = await restaurantsModel.getAllRestaurants(params)
-    const totalPages = Math.ceil(total / parseInt(params.perPage))
-
-    // Initialize next page and previous page
-    let nextPage = ''
-    let previousPage = ''
-
-    // Logic test for next page
-    if (params.currentPage < totalPages) {
-      const query = req.query
-      query.page = params.currentPage + 1;
-      nextPage = process.env.APP_URL.concat(`restaurants?${qs.stringify(query)}`)
-    } else {
-      nextPage = null
-    }
-
-    // Logic test for previous page
-    if (params.currentPage > 1) {
-      const query = req.query
-      query.page = params.currentPage - 1;
-      previousPage = process.env.APP_URL.concat(`restaurants?${qs.stringify(query)}`)
-    } else {
-      previousPage = null
-    }
-
-    const pagination = {
-      ...params,
-      nextPage,
-      previousPage,
-      totalPages,
-      totalEntries: total
-    }
+    const pagination = paginate(req, 'restaurants', total, params)
 
     res.send({
       success: true,
       data: results,
-      pagination
+      pagination 
     })
   } catch(err) {
     res.send({
