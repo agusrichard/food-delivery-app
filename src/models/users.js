@@ -1,22 +1,23 @@
 const db = require('../config/db')
 
 
-const createUser = (name, username, email, password) => {
+const createUser = (data) => {
 
   const selectQuery = `
     SELECT COUNT(*) as total
     FROM users
-    WHERE username=${db.escape(username)}
+    WHERE username=${db.escape(data.username)}
     LIMIT 1;
   `
 
   const insertQuery = `
-    INSERT INTO users(full_name, username, email, password) 
+    INSERT INTO users(full_name, username, email, password, verification_code) 
     VALUES(
-      ${db.escape(name)},
-      ${db.escape(username)}, 
-      ${db.escape(email)}, 
-      ${db.escape(password)}
+      ${db.escape(data.name)},
+      ${db.escape(data.username)}, 
+      ${db.escape(data.email)}, 
+      ${db.escape(data.hashedPassword)},
+      ${db.escape(data.token)}
     );
   `
 
@@ -129,11 +130,31 @@ const updateBalance = (username, balance) => {
 }
 
 
+const verifyUser = (username) => {
+  console.log('Inside models/users/verifyUser')
+  const query = `
+    UPDATE users
+    SET is_verified=1
+    WHERE username=${db.escape(username)};
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      console.log(error)
+      if (error) reject(error)
+      else resolve()
+    })
+  })
+
+}
+
+
 module.exports = { 
   createUser, 
   getUserByUsername, 
   deleteUser, 
   addAdminUser, 
   changeProfile,
-  updateBalance 
+  updateBalance,
+  verifyUser
 }
