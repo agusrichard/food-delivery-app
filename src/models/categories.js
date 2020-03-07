@@ -24,10 +24,7 @@ const getAllCategories = () => {
 
   const query = `
     SELECT *
-    FROM items
-    JOIN item_categories
-    ON items.id = item_categories.item_id
-    GROUP BY item_categories.id
+    FROM item_categories;
   `
   console.log(query)
 
@@ -46,18 +43,17 @@ const getCategoryById = (id) => {
   const query = `
     SELECT *
     FROM items
-    WHERE items.id IN (
-      SELECT item_categories.item_id
-      FROM item_categories
-      WHERE item_categories.id=${db.escape(id)}
-    )
-    LIMIT 5;
+    WHERE category_id=${db.escape(id)}
   `
+
+  console.log(query)
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
+      console.log(error)
+      console.log(results)
       if (error) reject(error)
-      else resolve(results[0])
+      else resolve(results)
     })
   })
 }
