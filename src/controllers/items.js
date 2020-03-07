@@ -60,7 +60,7 @@ const createItem = async (req, res) => {
 
 
 const getAllItems = async (req, res) => {
-  // Parameters to specify how to fetch all restaurans
+  // Parameters to specify how to fetch all items
   const params = {
     currentPage: parseInt(req.query.page) || 1,
     perPage: parseInt(req.query.limit) || 5,
