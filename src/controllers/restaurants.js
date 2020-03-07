@@ -7,19 +7,27 @@ require('dotenv').config()
 const createRestaurant = async (req, res) => {
   const { userId } = req.auth
   const { name, location, description } = req.body
-  console.log('Inside controllers/restaurants')
-  console.log(userId, name, location, description)
-  try {
-    await restaurantsModel.createRestaurant(userId, name, location, description)
-
-    res.json({
-      success: true,
-      msg: 'Restaurant is created successfully'
-    })
-  } catch(err) {
+  const logo = req.file.path.replace('\\', '/')
+  
+  if (name && location && description && logo) {
+    try {
+      const data = { name, location, description, logo }
+      await restaurantsModel.createRestaurant(userId, data)
+  
+      res.json({
+        success: true,
+        msg: 'Restaurant is created successfully'
+      })
+    } catch(err) {
+      res.json({
+        success: false,
+        msg: 'Failed to create restaurant'
+      })
+    }
+  } else {
     res.json({
       success: false,
-      msg: 'Failed to create restaurant'
+      msg: 'Please provide the required fields'
     })
   }
 }

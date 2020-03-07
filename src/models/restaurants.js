@@ -1,24 +1,23 @@
 const db = require('../config/db')
 
 
-const createRestaurant = (ownerId, name, location, description) => {
-  console.log('In models/restaurants/createRestaurant')
+const createRestaurant = (ownerId, data) => {
+  const query = `
+    INSERT INTO restaurants(owner_id, name, location, description, logo)
+    VALUES(
+      ${db.escape(ownerId)},
+      ${db.escape(data.name)}, 
+      ${db.escape(data.location)}, 
+      ${db.escape(data.description)}, 
+      ${db.escape(data.logo)}
+    );
+  `
+
   return new Promise((resolve, reject) => {
-    db.query(
-      `
-        INSERT INTO restaurants(name, location, description, owner_id)
-        VALUES(
-          ${db.escape(name)}, 
-          ${db.escape(location)}, 
-          ${db.escape(description)}, 
-          ${db.escape(ownerId)}
-        );
-      `,
-      (error, results, fields) => {
+    db.query(query, (error, results, fields) => {
         if (error) reject(error)
         else resolve()
-      }
-    )
+    })
   })
 }
 
