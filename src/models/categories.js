@@ -24,7 +24,7 @@ const getAllCategories = () => {
 
   const query = `
     SELECT *
-    FROM item_categories;
+    FROM item_categories
   `
   console.log(query)
 

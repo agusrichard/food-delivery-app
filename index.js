@@ -32,7 +32,7 @@ app.use('/users', require('./src/routes/users'))
 app.use('/restaurants', require('./src/routes/restaurants'))
 app.use('/items', require('./src/routes/items'))
 // app.use('/cart', require('./src/routes/cart'))
-// app.use('/categories', require('./src/routes/categories'))
+app.use('/categories', require('./src/routes/categories'))
 app.use('/reviews', require('./src/routes/reviews'))
 
 
