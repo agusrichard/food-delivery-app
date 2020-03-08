@@ -1,4 +1,5 @@
 const reviewsModel = require('../models/reviews')
+const { paginate } = require('../utilities/pagination')
 
 
 const createReview = async (req, res) => {
@@ -32,72 +33,18 @@ const createReview = async (req, res) => {
 }
 
 
-const getAllReviews = async (req, res) => {
-  // Parameters to specify how to fetch all reviews
-  const params = {
-    currentPage: parseInt(req.query.page) || 1,
-    perPage: parseInt(req.query.limit) || 5,
-    search: req.query.search || '',
-    sort: req.query.sort || { key: 'id', value: 0 }
-  }
-
-  // Create search parameters
-  const searchKeys = Object.keys(params.search)
-  if (req.query.search) {
-    params.search = searchKeys.map((v, i) => {
-      return { key: searchKeys[i], value: req.query.search[searchKeys[i]] }
-    })
-  }
-
-  // Create sort parameters
-  const sortKey = Object.keys(params.sort)
-  if (req.query.sort) {
-    params.sort = sortKey.map((v, i) => {
-      return { key: sortKey[i], value: req.query.sort[sortKey[i]] }
-    })[0]
-  }
-
+const getAllReviews = async (req, res) => { 
   try {
-    const { results, total } = await reviewsModel.getAllReviews(params)
-    const totalPages = Math.ceil(total / parseInt(params.perPage))
+    const { results, total } = await reviewsModel.getAllReviews(req)
+    const pagination = paginate(req, 'items', total)
 
-    // Initialize next page and previous page
-    let nextPage = ''
-    let previousPage = ''
-
-    // Logic test for next page
-    if (params.currentPage < totalPages) {
-      const query = req.query
-      query.page = params.currentPage + 1;
-      nextPage = process.env.APP_URL.concat(`reviews?${qs.stringify(query)}`)
-    } else {
-      nextPage = null
-    }
-
-    // Logic test for previous page
-    if (params.currentPage > 1) {
-      const query = req.query
-      query.page = params.currentPage - 1;
-      previousPage = process.env.APP_URL.concat(`reviews?${qs.stringify(query)}`)
-    } else {
-      previousPage = null
-    }
-
-    const pagination = {
-      ...params,
-      nextPage,
-      previousPage,
-      totalPages,
-      totalEntries: total
-    }
-
-    res.json({
+    res.send({
       success: true,
       data: results,
-      pagination
+      pagination 
     })
   } catch(err) {
-    res.json({
+    res.send({
       success: false,
       msg: 'There is an error occured ' + err
     })

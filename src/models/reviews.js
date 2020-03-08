@@ -1,4 +1,5 @@
 const db = require('../config/db')
+const { paginationParams } = require('../utilities/pagination')
 
 
 const createReview = (userId, itemId, data) => {
@@ -18,6 +19,7 @@ const createReview = (userId, itemId, data) => {
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
+      console.log(error)
       if (error) reject(error)
       else resolve()
     })
@@ -25,37 +27,28 @@ const createReview = (userId, itemId, data) => {
 }
 
 
-const getAllReviews = (params) => {
-  const { perPage, currentPage, search, sort } = params
-
-  // Query conditions
-  const conditions = `
-    ${search && `WHERE ${search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
-    ORDER BY ${sort.key} ${parseInt(sort.value) === 0 ? 'ASC' : 'DESC'}
-    LIMIT ${perPage}
-    OFFSET ${(currentPage - 1) * perPage}
-  `
-  console.log(conditions)
-
-  const selectTotal = `
-    SELECT COUNT(*) AS total
-    from item_reviews
-  `
-
-  const selectReviews = `
-    SELECT *
-    FROM item_reviews
-    ${conditions};
-  `
+const getAllReviews = (req) => {
+  const { conditions, paginate } = paginationParams(req)
 
   return new Promise((resolve, reject) => {
-    db.query(selectTotal, (error, results, fields) => {
-      const total = results[0].total
-      db.query(selectReviews, (error, results, fields) => {
-        if (error) reject(error)
-        resolve({ results, total })
-      })
-    })
+    db.query(
+      `SELECT COUNT(*) AS total
+      from item_reviews
+      ${conditions}`,
+      (error, results, fields) => {
+        const total = results[0].total
+        db.query(
+          `SELECT *
+           FROM item_reviews
+           ${conditions}
+           ${paginate};`,
+           (error, results, fields) => {
+             if (error) reject(error)
+             resolve({ results, total })
+           }
+        )
+      }
+    )
   })
 }
 
@@ -118,10 +111,10 @@ const deleteReview = (id) => {
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
-        if (error) reject(error)
-        resolve()
-      }
-    )
+      console.log(error)
+      if (error) reject(error)
+      resolve()
+    })
   })
 }
 
