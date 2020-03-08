@@ -134,7 +134,7 @@ const verifyUser = (username) => {
   console.log('Inside models/users/verifyUser')
   const query = `
     UPDATE users
-    SET is_verified=1
+    SET is_verified=1, verification_code=NULL
     WHERE username=${db.escape(username)};
   `
 
@@ -145,7 +145,24 @@ const verifyUser = (username) => {
       else resolve()
     })
   })
+}
 
+
+const changePassword = (username, newPassword) => {
+  console.log('Inside models/users/verifyUser')
+  const query = `
+    UPDATE users
+    SET password=${db.escape(newPassword)}
+    WHERE username=${db.escape(username)};
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      console.log(error)
+      if (error) reject(error)
+      else resolve()
+    })
+  })
 }
 
 
@@ -156,5 +173,6 @@ module.exports = {
   addAdminUser, 
   changeProfile,
   updateBalance,
-  verifyUser
+  verifyUser,
+  changePassword
 }
