@@ -59,6 +59,26 @@ const getUserByUsername = (username) => {
 }
 
 
+const getUserById = (id) => {
+  console.log('In models/users, id: ' + id)
+
+  const query = `
+    SELECT *
+    FROM users
+    WHERE id=${db.escape(id)};
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      if (error) reject(error)
+      console.log('In getUserId, results: ' + results)
+      if (results) resolve(results[0])
+      else resolve(false)
+    })
+  })
+}
+
+
 const changeProfile = (userId, data) => {
   console.log('Inside models/users/changeProfile')
   console.log(data)
@@ -166,14 +186,49 @@ const changePassword = (username, newPassword) => {
   })
 }
 
+const getAllUsers = (params) => {
+  const { perPage, currentPage, search, sort } = params
+
+  // Query conditions
+  const conditions = `
+    ${search && `WHERE ${search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
+    ORDER BY ${sort.key} ${parseInt(sort.value) === 0 ? 'ASC' : 'DESC'}
+    LIMIT ${perPage}
+    OFFSET ${(currentPage - 1) * perPage}
+  `
+
+  console.log(conditions)
+
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT COUNT(*) AS total
+      from users`,
+      (error, results, fields) => {
+        const total = results[0].total
+        db.query(
+          `SELECT *
+           FROM users
+           ${conditions};`,
+           (error, results, fields) => {
+             if (error) reject(error)
+             resolve({ results, total })
+           }
+        )
+      }
+    )
+  })
+}
+
 
 module.exports = { 
   createUser, 
-  getUserByUsername, 
+  getUserByUsername,
+  getUserById, 
   deleteUser, 
   addAdminUser, 
   changeProfile,
   updateBalance,
   verifyUser,
-  changePassword
+  changePassword,
+  getAllUsers
 }

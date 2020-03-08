@@ -1,4 +1,5 @@
 const usersModel = require('../models/users')
+const { paginate, paginationParams } = require('../utilities/pagination')
 
 
 const userProfile = async (req, res) => {
@@ -6,6 +7,30 @@ const userProfile = async (req, res) => {
 
   try {
     const user = await usersModel.getUserByUsername(username)
+    if (user) {
+      res.json({
+        success: true,
+        data: user
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: 'Not allowed'
+      })
+    }
+  } catch(err) {
+    res.json({
+      success: false,
+      msg: 'Failed to load user\'s profile'
+    })
+  }
+}
+
+const userProfileById = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const user = await usersModel.getUserById(id)
     if (user) {
       res.json({
         success: true,
@@ -125,4 +150,31 @@ const topUp = async (req, res) => {
 }
 
 
-module.exports = { userProfile, changeProfile, deleteUser, topUp }
+const getAllUsers = async (req, res) => { 
+  try {
+    const params = paginationParams(req)
+    const { results, total } = await usersModel.getAllUsers(params)
+    const pagination = paginate(req, 'users', total, params)
+
+    res.send({
+      success: true,
+      data: results,
+      pagination 
+    })
+  } catch(err) {
+    res.send({
+      success: false,
+      msg: 'There is an error occured ' + err
+    })
+  }
+}
+
+
+module.exports = { 
+  userProfile, 
+  changeProfile, 
+  deleteUser, 
+  topUp,
+  userProfileById,
+  getAllUsers 
+}
