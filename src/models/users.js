@@ -67,8 +67,8 @@ const changeProfile = (userId, data) => {
     UPDATE users
     SET 
       email=${db.escape(data.email)}, 
-      full_name=${db.escape(data.full_name)}, 
-      profile_picture=${db.escape(data.profile_picture)}
+      full_name=${db.escape(data.fullName)}, 
+      profile_picture=${db.escape(data.profilePicture)}
     WHERE id=${db.escape(userId)};
   `
 
@@ -82,7 +82,7 @@ const changeProfile = (userId, data) => {
 
 
 const deleteUser = (id) => {
-
+  console.log('Inside models/usres/deleteUser')
   const query = `
     DELETE FROM users
     WHERE id=${db.escape(parseInt(id))};
@@ -90,6 +90,7 @@ const deleteUser = (id) => {
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
+      console.log(error)
       if (error) reject(error)
       else resolve()
     })

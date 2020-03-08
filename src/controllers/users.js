@@ -28,10 +28,11 @@ const userProfile = async (req, res) => {
 
 const changeProfile = async (req, res) => {
   const { username } = req.auth
-  const { email, full_name, profile_picture } = req.body
+  const { email, fullName } = req.body
+  const profilePicture = req.file ? req.file.path.replace('\\', '/') : ''
 
   console.log('Inside controllers/users/changeProfile')
-  console.log(full_name)
+  console.log(fullName)
 
   try {
     const user = await usersModel.getUserByUsername(username)
@@ -39,8 +40,8 @@ const changeProfile = async (req, res) => {
     if (user) {
       const data = {
         email: email || user.email,
-        full_name: full_name || user.full_name,
-        profile_picture: profile_picture || user.profile_picture
+        fullName: fullName || user.full_name,
+        profilePicture: profilePicture || user.profile_picture
       }
       
       console.log(data)
@@ -66,10 +67,11 @@ const changeProfile = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { username } = req.auth
+  console.log(username)
 
   try {
-    const user = usersModel.getUserByUsername(username)
-
+    const user = await usersModel.getUserByUsername(username)
+    console.log(user)
     if (user) {
       await usersModel.deleteUser(user.id)
       res.json({
