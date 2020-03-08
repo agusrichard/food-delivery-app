@@ -54,7 +54,7 @@ const userProfileById = async (req, res) => {
 const changeProfile = async (req, res) => {
   const { username } = req.auth
   const { email, fullName } = req.body
-  const profilePicture = req.file ? req.file.path.replace('\\', '/') : ''
+  const profilePicture = req.file ? req.file.path.replace(/\\/g, '/') : ''
 
   console.log('Inside controllers/users/changeProfile')
   console.log(fullName)

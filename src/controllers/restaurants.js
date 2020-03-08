@@ -8,7 +8,7 @@ require('dotenv').config()
 const createRestaurant = async (req, res) => {
   const { userId } = req.auth
   const { name, location, description } = req.body
-  const logo = req.file.path.replace('\\', '/')
+  const logo = req.file.path.replace(/\\/g, '/')
   
   if (name && location && description && logo) {
     try {
@@ -35,9 +35,8 @@ const createRestaurant = async (req, res) => {
 
 const getAllRestaurants = async (req, res) => { 
   try {
-    const params = paginationParams(req)
-    const { results, total } = await restaurantsModel.getAllRestaurants(params)
-    const pagination = paginate(req, 'restaurants', total, params)
+    const { results, total } = await restaurantsModel.getAllRestaurants(req)
+    const pagination = paginate(req, 'users', total)
 
     res.send({
       success: true,
@@ -167,10 +166,59 @@ const deleteRestaurant = async (req, res) => {
 }
 
 
+const getItemsByRestaurant = async (req, res) => {
+  const { restaurantId } = req.params
+  console.log('Inside controllers/restaurants/getItemsByRestaurant')
+  console.log(restaurantId)
+
+  try {
+    const items = await restaurantsModel.getItemsByRestaurantId(parseInt(restaurantId))
+    console.log(items)
+    res.json({
+      success: true,
+      data: items
+    })
+  } catch(err) {
+    res.json({
+      success: false,
+      msg: 'Failed to get items by restaurant id'
+    })
+  }
+}
+
+
+const getRestaurantByUser = async (req, res) => {
+  const { userId } = req.auth
+
+  if (userId) {
+    try {
+      const restaurants = await restaurantsModel.getRestaurantByUserId(userId)
+      console.log(restaurants)
+      res.json({
+        success: true,
+        data: restaurants
+      })
+    } catch(err) {
+      res.json({
+        success: false,
+        msg: 'Failed to get restaurant owned by user'
+      })
+    }
+  } else {
+    res.json({
+      success: false,
+      msg: 'Failed to get restaurants owned by user'
+    })
+  }
+}
+
+
 module.exports = { 
   createRestaurant, 
   getAllRestaurants, 
   getRestaurantById, 
   updateRestaurant,
-  deleteRestaurant
+  deleteRestaurant,
+  getItemsByRestaurant,
+  getRestaurantByUser
 }

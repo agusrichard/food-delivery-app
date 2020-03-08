@@ -1,9 +1,9 @@
 const multer = require('multer')
 
-function multerHelper() {
+function multerHelper(route) {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, './uploads')
+      cb(null, `./uploads/${route}`)
     },
     filename: function (req, file, cb) {
       cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)

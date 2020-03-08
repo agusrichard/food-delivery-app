@@ -1,4 +1,5 @@
 const db = require('../config/db')
+const { paginationParams } = require('../utilities/pagination')
 
 
 const createRestaurant = (ownerId, data) => {
@@ -22,29 +23,21 @@ const createRestaurant = (ownerId, data) => {
 }
 
 
-const getAllRestaurants = (params) => {
-  const { perPage, currentPage, search, sort } = params
-
-  // Query conditions
-  const conditions = `
-    ${search && `WHERE ${search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
-    ORDER BY ${sort.key} ${parseInt(sort.value) === 0 ? 'ASC' : 'DESC'}
-    LIMIT ${perPage}
-    OFFSET ${(currentPage - 1) * perPage}
-  `
-
-  console.log(conditions)
+const getAllRestaurants = (req) => {
+  const { conditions, paginate } = paginationParams(req)
 
   return new Promise((resolve, reject) => {
     db.query(
       `SELECT COUNT(*) AS total
-      from restaurants`,
+      from restaurants
+      ${conditions}`,
       (error, results, fields) => {
         const total = results[0].total
         db.query(
           `SELECT *
            FROM restaurants
-           ${conditions};`,
+           ${conditions}
+           ${paginate};`,
            (error, results, fields) => {
              if (error) reject(error)
              resolve({ results, total })
@@ -113,10 +106,48 @@ const deleteRestaurant = (id) => {
 }
 
 
+const getItemsByRestaurantId = (restaurantId) => {
+  console.log('Inside models/restaurants/getItemsByRestaurantId')
+
+  const query = `
+    SELECT *
+    FROM items
+    WHERE restaurant_id=${db.escape(restaurantId)}
+  `
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      console.log(error)
+      if (error) reject(error)
+      else resolve(results)
+    }) 
+  })
+}
+
+
+const getRestaurantByUserId = (userId) => {
+  console.log('Inside models/restaurants/getRestaurantsByUserId')
+
+  const query = `
+    SELECT *
+    FROM restaurants
+    WHERE owner_id=${db.escape(userId)}
+  `
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      console.log(error)
+      if (error) reject(error)
+      else resolve(results)
+    }) 
+  })
+}
+
+
 module.exports = { 
   createRestaurant, 
   getAllRestaurants, 
   getRestaurantById,
   updateRestaurant,
-  deleteRestaurant
+  deleteRestaurant,
+  getItemsByRestaurantId,
+  getRestaurantByUserId
 }
