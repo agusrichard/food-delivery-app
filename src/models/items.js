@@ -1,17 +1,19 @@
 const db = require('../config/db')
+const { paginationParams } = require('../utilities/pagination')
 
 
-const createItem = (restaurantId, name, price, description, categoryId) => {
+const createItem = (data) => {
   console.log('In models/items/createItem')
   
   const query = `
-    INSERT INTO items(restaurant_id, name, price, description, category_id)
+    INSERT INTO items(restaurant_id, name, price, description, category_id, images)
     VALUES(
-      ${db.escape(restaurantId)}, 
-      ${db.escape(name)}, 
-      ${db.escape(price)}, 
-      ${db.escape(description)},
-      ${db.escape(categoryId)}
+      ${db.escape(data.restaurantId)}, 
+      ${db.escape(data.name)}, 
+      ${db.escape(data.price)}, 
+      ${db.escape(data.description)},
+      ${db.escape(data.itemCategoryId)},
+      ${db.escape(data.itemImage)}
     );
   `
 
@@ -26,37 +28,28 @@ const createItem = (restaurantId, name, price, description, categoryId) => {
 }
 
 
-const getAllItems = (params) => {
-  const { perPage, currentPage, search, sort } = params
-
-  // Query conditions
-  const conditions = `
-    ${search && `WHERE ${search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
-    ORDER BY ${sort.key} ${parseInt(sort.value) === 0 ? 'ASC' : 'DESC'}
-    LIMIT ${perPage}
-    OFFSET ${(currentPage - 1) * perPage}
-  `
-  console.log(conditions)
-
-  const selectTotal = `
-    SELECT COUNT(*) AS total
-    from items
-  `
-
-  const selectItems = `
-    SELECT *
-    FROM items
-    ${conditions};
-  `
+const getAllItems = (req) => {
+  const { conditions, paginate } = paginationParams(req)
 
   return new Promise((resolve, reject) => {
-    db.query(selectTotal, (error, results, fields) => {
-      const total = results[0].total
-      db.query(selectItems, (error, results, fields) => {
-        if (error) reject(error)
-        resolve({ results, total })
-      })
-    })
+    db.query(
+      `SELECT COUNT(*) AS total
+      from items
+      ${conditions}`,
+      (error, results, fields) => {
+        const total = results[0].total
+        db.query(
+          `SELECT *
+           FROM items
+           ${conditions}
+           ${paginate};`,
+           (error, results, fields) => {
+             if (error) reject(error)
+             resolve({ results, total })
+           }
+        )
+      }
+    )
   })
 }
 

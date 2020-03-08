@@ -1,10 +1,10 @@
 const router = require('express').Router()
-
+const { multerHelper } = require('../utilities/multerHelper')
 const { isUserAuthenticated, isAdminUser } = require('../middlewares/authUserToken')
 const { createItem, getAllItems, getItemById,  updateItem, deleteItem } =  require('../controllers/items')
 
 
-router.post('/', isUserAuthenticated, createItem)
+router.post('/', [isUserAuthenticated, multerHelper('items').single('itemImage')], createItem)
 
 router.get('/', getAllItems)
 

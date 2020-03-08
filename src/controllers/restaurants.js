@@ -1,7 +1,7 @@
 const qs = require('qs')
 const restaurantsModel = require('../models/restaurants')
 const usersModel = require('../models/users')
-const { paginate, paginationParams } = require('../utilities/pagination')
+const { paginate } = require('../utilities/pagination')
 require('dotenv').config()
 
 
@@ -36,7 +36,7 @@ const createRestaurant = async (req, res) => {
 const getAllRestaurants = async (req, res) => { 
   try {
     const { results, total } = await restaurantsModel.getAllRestaurants(req)
-    const pagination = paginate(req, 'users', total)
+    const pagination = paginate(req, 'items', total)
 
     res.send({
       success: true,
