@@ -26,11 +26,24 @@ const paginationParams = (req) => {
     })[0]
   }
 
-  return params
+  // Query conditions
+  const conditions = `
+    ${params.search && `WHERE ${params.search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
+  `
+
+
+  const paginate = `
+    ORDER BY ${params.sort.key} ${parseInt(params.sort.value) === 0 ? 'ASC' : 'DESC'}
+    LIMIT ${params.perPage}
+    OFFSET ${(params.currentPage - 1) * params.perPage}
+  `
+
+  return { conditions, paginate, params }
 }
 
 
-const paginate = (req, route, total, params) => {
+const paginate = (req, route, total) => {
+  const { params } = paginationParams(req)
 
   const totalPages = Math.ceil(total / parseInt(params.perPage))
 

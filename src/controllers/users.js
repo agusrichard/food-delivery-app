@@ -152,9 +152,8 @@ const topUp = async (req, res) => {
 
 const getAllUsers = async (req, res) => { 
   try {
-    const params = paginationParams(req)
-    const { results, total } = await usersModel.getAllUsers(params)
-    const pagination = paginate(req, 'users', total, params)
+    const { results, total } = await usersModel.getAllUsers(req)
+    const pagination = paginate(req, 'users', total)
 
     res.send({
       success: true,

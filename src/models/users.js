@@ -1,4 +1,5 @@
 const db = require('../config/db')
+const { paginationParams } = require('../utilities/pagination')
 
 
 const createUser = (data) => {
@@ -186,29 +187,21 @@ const changePassword = (username, newPassword) => {
   })
 }
 
-const getAllUsers = (params) => {
-  const { perPage, currentPage, search, sort } = params
-
-  // Query conditions
-  const conditions = `
-    ${search && `WHERE ${search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
-    ORDER BY ${sort.key} ${parseInt(sort.value) === 0 ? 'ASC' : 'DESC'}
-    LIMIT ${perPage}
-    OFFSET ${(currentPage - 1) * perPage}
-  `
-
-  console.log(conditions)
+const getAllUsers = (req) => {
+  const { conditions, paginate } = paginationParams(req)
 
   return new Promise((resolve, reject) => {
     db.query(
       `SELECT COUNT(*) AS total
-      from users`,
+      from users
+      ${conditions}`,
       (error, results, fields) => {
         const total = results[0].total
         db.query(
           `SELECT *
            FROM users
-           ${conditions};`,
+           ${conditions}
+           ${paginate};`,
            (error, results, fields) => {
              if (error) reject(error)
              resolve({ results, total })
