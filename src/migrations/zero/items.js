@@ -4,6 +4,7 @@ db.query(
   `CREATE TABLE items (
     id INT PRIMARY KEY AUTO_INCREMENT,
     restaurant_id INT,
+    category_id INT,
     name VARCHAR(40),
     price INT,
     images TEXT,
