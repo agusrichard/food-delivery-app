@@ -8,7 +8,9 @@ const mailer = require('../utilities/mailer')
 
 
 const register = async (req, res) => {
+  console.log('Inside controllers/auth/register')
   const { name, username, email, password } = req.body
+  console.log(req.body)
   
   if (username && password && email && name) {
     const hashedPassword = bcrypt.hashSync(password)
@@ -19,10 +21,12 @@ const register = async (req, res) => {
     try {
       const canCreate = await usersModel.createUser(data)
       if (canCreate) {
+        console.log(canCreate)
         const mailUrl = await mailer(email, 'Account Verification', verificationUrl)
+        console.log(mailUrl)
         res.json({
           status: true,
-          msg: `User with username ${req.body.username} is created. Pleae verify your account.`,
+          msg: `User with username ${req.body.username} is created. Please verify your account.`,
           url: mailUrl
         })
       } else {

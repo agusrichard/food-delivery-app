@@ -1,5 +1,5 @@
 const router = require('express').Router()
-// const { addAdminUser, getUserByUsername } = require('../models/users')
+const { addAdminUser, getUserByUsername } = require('../models/users')
 
 
 //  ======================= Migration zero ===============================
@@ -101,41 +101,41 @@ router.get('/one/add-admin-role', (req, res) => {
 })
 
 
-// router.post('/add-admin-user', async (req, res) => {
-//   const { id, username } = req.body
+router.post('/add-admin-user', async (req, res) => {
+  const { id, username } = req.body
 
-//   if (id, username) {
-//     try {
-//       const user = await getUserByUsername(username)
+  if (id, username) {
+    try {
+      const user = await getUserByUsername(username)
 
-//       if (user) {
+      if (user) {
         
-//         await addAdminUser(user.id, user.username)
-//         res.json({
-//           success: true,
-//           msg: `Success to add admin user with id:${id} and username:${username}`
-//         })
+        await addAdminUser(user.id, user.username)
+        res.json({
+          success: true,
+          msg: `Success to add admin user with id:${id} and username:${username}`
+        })
 
-//       } else {
-//         res.json({
-//           success: false,
-//           msg: `No username:${username} found`
-//         })
-//       }
-//     } catch(err) {
-//       res.json({
-//         success: false,
-//         msg: `Failed to add admin user with id:${id} and username:${username}`
-//       })
-//     }
+      } else {
+        res.json({
+          success: false,
+          msg: `No username:${username} found`
+        })
+      }
+    } catch(err) {
+      res.json({
+        success: false,
+        msg: `Failed to add admin user with id:${id} and username:${username}`
+      })
+    }
 
-//   } else {
-//     res.json({
-//       success: false,
-//       msg: 'Please provide id and username'
-//     })
-//   }
-// })
+  } else {
+    res.json({
+      success: false,
+      msg: 'Please provide id and username'
+    })
+  }
+})
 
 
 router.get('/one/alter-items', (req, res) => {
