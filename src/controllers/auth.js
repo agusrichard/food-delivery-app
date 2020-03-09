@@ -3,50 +3,52 @@ const jwt = require('jsonwebtoken')
 const md5 = require('md5')
 require('dotenv').config()
 
+// Owned defined imports
 const usersModel = require('../models/users')
+const jsonFormatting = require('../utilities/jsonFormatting')
 const mailer = require('../utilities/mailer')
 
 
+// Controller to register new user
 const register = async (req, res) => {
-  console.log('Inside controllers/auth/register')
   const { name, username, email, password } = req.body
-  console.log(req.body)
-  
-  if (username && password && email && name) {
-    const hashedPassword = bcrypt.hashSync(password)
-    const token = md5(username)
-    const verificationUrl = process.env.APP_URL + 'auth/verify?code=' + token
-    const data = { name, username, email, hashedPassword, token }
 
-    try {
-      const canCreate = await usersModel.createUser(data)
+  try {
+    if (username && password && email && name) {
+      const hashedPassword = bcrypt.hashSync(password)
+      const token = md5(username)
+      const verificationUrl = process.env.APP_URL + 'auth/verify?code=' + token
+      const userData = { name, username, email, hashedPassword, token }
+
+      const canCreate = await usersModel.createUser(userData)
       if (canCreate) {
-        console.log(canCreate)
         const mailUrl = await mailer(email, 'Account Verification', verificationUrl)
-        console.log(mailUrl)
-        res.json({
-          status: true,
-          msg: `User with username ${req.body.username} is created. Please verify your account.`,
-          url: mailUrl
-        })
+        const params = {
+          success: true,
+          message: `User with username ${req.body.username} is created. Please verify your account.`,
+        }
+        const data = { name, username, email, mailUrl }
+        jsonFormatting(res, 200, params, data)()
       } else {
-        res.json({
-          status: false,
-          msg: 'Username is already taken'
-        })
+        const params = {
+          success: false,
+          message: 'Username is already used'
+        }
+        jsonFormatting(res, 400, params, {})()
       }
-    } catch(err) {
-      res.send({
-        status: false,
-        msg: 'There is an error when creating the user ' + err
-      })
+    } else {
+      const params = {
+        success: false,
+        message: 'Please provide name, username, email, and password'
+      }
+      jsonFormatting(res, 400, params, {})()
     }
-
-  } else {
-    res.json({
+  } catch(err) {
+    const params = {
       success: false,
-      msg: 'Please provide name, username, email, and password'
-    })
+      message: 'Internal Server Error'
+    }
+    jsonFormatting(res, 500, params, {})()
   }
 }
 
@@ -106,7 +108,7 @@ const login = async (req, res) => {
       })
     }
   } else {
-    res.json({
+    res.status(400).json({
       success: false,
       msg: 'Please provide username and password'
     })
@@ -148,7 +150,7 @@ const verify = async (req, res) => {
       }
     } else {
       res.json({
-        success: 'Failed to verify user'
+        success: 'Failed to verify account'
       })
     }
   } catch(err) {

@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 var cors = require('cors')
 require('dotenv').config()
 
@@ -16,6 +17,7 @@ app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
+app.use(morgan('combined'))
 
 
 // Root route
