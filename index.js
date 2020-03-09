@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+var cors = require('cors')
 require('dotenv').config()
 
 // Import middlewares
@@ -14,6 +15,7 @@ const app = express()
 app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors())
 
 
 // Root route
