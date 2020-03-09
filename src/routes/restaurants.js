@@ -2,31 +2,23 @@ const router = require('express').Router()
 
 const { multerHelper } = require('../utilities/multerHelper')
 const { isUserAuthenticated } = require('../middlewares/authUserToken')
-const { 
-    createRestaurant, 
-    getRestaurantById, 
-    getAllRestaurants, 
-    updateRestaurant, 
-    deleteRestaurant, 
-    getItemsByRestaurant,
-    getRestaurantByUser 
-} = require('../controllers/restaurants')
+const RestaurantsController = require('../controllers/restaurants')
 
 
 
-router.get('/', getAllRestaurants)
+router.get('/', RestaurantsController.getAllRestaurants)
 
-router.post('/', [isUserAuthenticated, multerHelper('restaurants').single('logo')], createRestaurant)
+router.post('/', [isUserAuthenticated, multerHelper('restaurants').single('logo')], RestaurantsController.createRestaurant)
 
-router.delete('/:id', isUserAuthenticated, deleteRestaurant)
+router.delete('/:id', isUserAuthenticated, RestaurantsController.deleteRestaurant)
 
-router.patch('/:id', isUserAuthenticated, updateRestaurant)
+router.patch('/:id', [isUserAuthenticated, multerHelper('restaurants').single('logo')], RestaurantsController.updateRestaurant)
 
-router.get('/:restaurantId/items', getItemsByRestaurant)
+router.get('/:restaurantId/items', RestaurantsController.getItemsByRestaurant)
 
-router.get('/owned', isUserAuthenticated, getRestaurantByUser)
+router.get('/owned', isUserAuthenticated, RestaurantsController.getRestaurantByUser)
 
-router.get('/:id', getRestaurantById)
+router.get('/:id', RestaurantsController.getRestaurantById)
 
 
 module.exports = router

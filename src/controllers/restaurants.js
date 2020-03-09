@@ -1,76 +1,50 @@
-const qs = require('qs')
-const restaurantsModel = require('../models/restaurants')
-const usersModel = require('../models/users')
-const { paginate } = require('../utilities/pagination')
 require('dotenv').config()
+
+// Owned defined imports
+const RestaurantsModel = require('../models/restaurants')
+const { paginate } = require('../utilities/pagination')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 
 
 const createRestaurant = async (req, res) => {
   const { userId } = req.auth
   const { name, location, description } = req.body
-  const logo = req.file.path.replace(/\\/g, '/')
-  
-  if (name && location && description && logo) {
-    try {
+  const logo = req.file ? req.file.path.replace(/\\/g, '/') : ''
+
+  try {
+    if (name && location && description && logo) {
       const data = { name, location, description, logo }
-      await restaurantsModel.createRestaurant(userId, data)
-  
-      res.json({
-        success: true,
-        msg: 'Restaurant is created successfully'
-      })
-    } catch(err) {
-      res.json({
-        success: false,
-        msg: 'Failed to create restaurant'
-      })
+      await RestaurantsModel.createRestaurant(userId, data)
+      ResponseTemplate.successResponse(res, 'Restaurant is created successfully', data)
+    } else {
+      ResponseTemplate.failedResponse(res, 'Please provide the required fields')
     }
-  } else {
-    res.json({
-      success: false,
-      msg: 'Please provide the required fields'
-    })
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
 const getAllRestaurants = async (req, res) => { 
   try {
-    const { results, total } = await restaurantsModel.getAllRestaurants(req)
+    const { results, total } = await RestaurantsModel.getAllRestaurants(req)
     const pagination = paginate(req, 'items', total)
-
-    res.send({
-      success: true,
-      data: results,
-      pagination 
-    })
+    ResponseTemplate.successResponse(res, 'Success to get all restaurants', { results, pagination })
   } catch(err) {
-    res.send({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
 
 const getRestaurantById = async (req, res) => {
   try {
-    const restaurant = await restaurantsModel.getRestaurantById(req.params.id)
+    const restaurant = await RestaurantsModel.getRestaurantById(req.params.id)
     if (restaurant) {
-      res.json({
-        success: true,
-        data: restaurant
-      })
+      ResponseTemplate.successResponse(res, `Success to get restaurant with id:${req.params.id}`, restaurant)
     } else {
-      res.json({
-        success: false,
-        msg: `Restaurant with id ${req.params.id} is not found`
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
   } catch(err) {
-    res.send({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -79,49 +53,28 @@ const updateRestaurant = async (req, res) => {
   const { id } = req.params
   const { userId, roleId } = req.auth
   const { name, location, description } = req.body
-
-  console.log('Inside controllers/restaurants/updateRestaurant')
-  console.log(id, userId)
+  const logo = req.file ? req.file.path.replace(/\\/g, '/') : ''
 
   try {
-    const date = new Date()
-    const restaurant = await restaurantsModel.getRestaurantById(id)
-    console.log(restaurant)
-
+    const restaurant = await RestaurantsModel.getRestaurantById(id)
     if (restaurant) {
       if (userId === restaurant.owner_id || parseInt(roleId) === 1) {
-        
         const data = {
           name: name || restaurant.name,
           location: location || restaurant.location,
           description: description || restaurant.description,
-          date: date || restaurant.date_updated
+          logo: logo || restaurant.logo
         }
-
-        await restaurantsModel.updateRestaurant(id, data)
-        res.send({
-          success: true,
-          msg: `Update restaurant with id ${id} is success`
-        })
-
+        await RestaurantsModel.updateRestaurant(id, data)
+        ResponseTemplate.successResponse(res, `Update restaurant with id ${id} is success`, {})
       } else {
-        res.json({
-          success: false,
-          msg: 'You don\'t have permission to update this restaurant'
-        })
+        ResponseTemplate.unauthorizedResponse(res)
       }
     } else {
-      res.json({
-        success: false,
-        msg: `No restaurant with id ${id} found`
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
-
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -130,38 +83,21 @@ const deleteRestaurant = async (req, res) => {
   const { id } = req.params
   const { userId, roleId } = req.auth
 
-  console.log('Inside controllers/restaurants/deleteRestaurant')
-  console.log(id, userId)
-
   try {
-    const restaurant = await restaurantsModel.getRestaurantById(id)
-    console.log(restaurant)
+    const restaurant = await RestaurantsModel.getRestaurantById(id)
 
     if (restaurant) {
       if (userId === restaurant.owner_id || parseInt(roleId) === 1) {
-        await restaurantsModel.deleteRestaurant(id)
-        res.json({
-          success: true,
-          msg: `Restaurant with id:${id} is deleted`
-        })
+        await RestaurantsModel.deleteRestaurant(id)
+        ResponseTemplate.successResponse(res, `Restaurant with id:${id} is deleted`, {})
       } else {
-        res.json({
-          success: false,
-          msg: 'You don\'t have permission to delete this restaurant'
-        })
+        ResponseTemplate.unauthorizedResponse(res)
       }
     } else {
-      res.json({
-        success: false,
-        msg: `No restaurant with id ${id} found`
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
-
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -172,17 +108,16 @@ const getItemsByRestaurant = async (req, res) => {
   console.log(restaurantId)
 
   try {
-    const items = await restaurantsModel.getItemsByRestaurantId(parseInt(restaurantId))
+    const items = await RestaurantsModel.getItemsByRestaurantId(parseInt(restaurantId), req)
     console.log(items)
-    res.json({
-      success: true,
-      data: items
-    })
+    if (items) {
+      ResponseTemplate.successResponse(res, `Success to get items from restaurant id ${restaurantId}`, items)
+    } else {
+      ResponseTemplate.notFoundResponse(res)
+    }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to get items by restaurant id'
-    })
+    console.log(err)
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -192,7 +127,7 @@ const getRestaurantByUser = async (req, res) => {
 
   if (userId) {
     try {
-      const restaurants = await restaurantsModel.getRestaurantByUserId(userId)
+      const restaurants = await RestaurantsModel.getRestaurantByUserId(userId)
       console.log(restaurants)
       res.json({
         success: true,

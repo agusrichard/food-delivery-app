@@ -27,9 +27,25 @@ function successResponse(response, message, data) {
   })
 }
 
+function notFoundResponse(response) {
+  response.status(404).json({
+    success: false,
+    message: 'Not Found'
+  })
+}
+
+function unauthorizedResponse(response) {
+  response.status(401).json({
+    success: false,
+    message: 'Unauthorized'
+  })
+}
+
 module.exports = { 
   jsonFormatting, 
   internalErrorResponse, 
   failedResponse,
-  successResponse
+  successResponse,
+  notFoundResponse,
+  unauthorizedResponse
 }

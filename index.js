@@ -4,6 +4,7 @@ const morgan = require('morgan')
 var cors = require('cors')
 require('dotenv').config()
 
+
 // Import middlewares
 const { isAdminUser } = require('./src/middlewares/authUserToken')
 
