@@ -17,7 +17,7 @@ app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
-app.use(morgan('combined'))
+app.use(morgan('tiny'))
 
 
 // Root route

@@ -5,8 +5,8 @@ require('dotenv').config()
 
 // Owned defined imports
 const usersModel = require('../models/users')
-const jsonFormatting = require('../utilities/jsonFormatting')
 const mailer = require('../utilities/mailer')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 
 
 // Controller to register new user
@@ -23,32 +23,16 @@ const register = async (req, res) => {
       const canCreate = await usersModel.createUser(userData)
       if (canCreate) {
         const mailUrl = await mailer(email, 'Account Verification', verificationUrl)
-        const params = {
-          success: true,
-          message: `User with username ${req.body.username} is created. Please verify your account.`,
-        }
         const data = { name, username, email, mailUrl }
-        jsonFormatting(res, 200, params, data)()
+        ResponseTemplate.successResponse(res, `User with username ${req.body.username} is created. Please verify your account.`, data)
       } else {
-        const params = {
-          success: false,
-          message: 'Username is already used'
-        }
-        jsonFormatting(res, 400, params, {})()
+        ResponseTemplate.failedResponse(res, 'Username is already used')
       }
     } else {
-      const params = {
-        success: false,
-        message: 'Please provide name, username, email, and password'
-      }
-      jsonFormatting(res, 400, params, {})()
+      ResponseTemplate.failedResponse(res, 'Please provide name, username, email, and password')
     }
   } catch(err) {
-    const params = {
-      success: false,
-      message: 'Internal Server Error'
-    }
-    jsonFormatting(res, 500, params, {})()
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -56,62 +40,35 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body
 
-  console.log('Inside /contollers/auth/login')
-  console.log(username)
-  console.log(password)
-
-  if (username && password) {
-    try {
-      // Get user with username
+  try {
+    if (username && password) {
       const user = await usersModel.getUserByUsername(username)
-      console.log('user' + user)
       if (user) {
-        console.log('Inside user if statement')
-        console.log(bcrypt.compareSync(password, user.password))
         if (bcrypt.compareSync(password, user.password)) {
           if (user.is_verified === 1) {
-            console.log('user is verified')
-            const data = {
+            const payload = {
               userId: user.id,
               username: user.username,
               email: user.email,
               roleId: user.role_id
             }
-            const token = jwt.sign(data, process.env.APP_KEY, { expiresIn: '60m' })
-            res.json({
-              success: true,
-              msg: 'Login success',
-              token
-            })
+            const token = jwt.sign(payload, process.env.APP_KEY, { expiresIn: '60m' })
+            const data = { username, token }
+            ResponseTemplate.successResponse(res, 'Login success', data)
           } else {
-            res.json({
-              success: false,
-              msg: 'Please verify your account'
-            })
+            ResponseTemplate.failedResponse(res, 'Please verify your account before login')
           }
         } else {
-          res.json({
-            success: false,
-            msg: 'Wrong username or password'
-          })
+          ResponseTemplate.failedResponse(res, 'Wrong username or password')
         }
       } else {
-        res.json({
-          success: false,
-          msg: `Wrong username or password`
-        })
+        ResponseTemplate.failedResponse(res, 'Wrong username or password')
       }
-    } catch(err) {
-      res.json({
-        success: false,
-        msg: 'There is an error occured ' + err
-      })
+    } else {
+      ResponseTemplate.failedResponse(res, 'Please provide username and password')
     }
-  } else {
-    res.status(400).json({
-      success: false,
-      msg: 'Please provide username and password'
-    })
+  } catch(error) {
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -154,10 +111,7 @@ const verify = async (req, res) => {
       })
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to verify account'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
