@@ -37,6 +37,7 @@ const register = async (req, res) => {
 }
 
 
+// Controller for login
 const login = async (req, res) => {
   const { username, password } = req.body
 
@@ -73,81 +74,53 @@ const login = async (req, res) => {
 }
 
 
+// Controller Verify Account
 const verify = async (req, res) => {
-  console.log('Inside controllers/auth/verify')
   const code = req.query.code
   const { username } = req.body
-  console.log(code)
 
   try {
     if (username) {
-      console.log(username)
       const user = await usersModel.getUserByUsername(username)
-      console.log(user)
       if (user) {
-        console.log(user.verification_code)
         if (user.verification_code == code) {
-          console.log(user.verification_code == code)
           await usersModel.verifyUser(username)
-          res.json({
-            success: true,
-            msg: 'Success to verify your account'
-          })
+          ResponseTemplate.successResponse(res, 'Success to verify account', {})
         } else {
-          res.json({
-            success: false,
-            msg: 'Failed to verify account'
-          })
+          ResponseTemplate.failedResponse(res, 'Wrong verification code')
         }
       } else {
-        res.json({
-          success: false,
-          msg: 'Failed to verify account'
-        })
+        ResponseTemplate.failedResponse(res, 'Failed to verify account')
       }
     } else {
-      res.json({
-        success: 'Failed to verify account'
-      })
+      ResponseTemplate.failedResponse(res, 'Failed to verify account')
     }
   } catch(err) {
     ResponseTemplate.internalErrorResponse(res)
   }
 }
 
+
+// Controller to forgot password
 const forgotPassword = async (req, res) => {
-  console.log('Inside controllers/auth/forgotPassword')
   const { username, email } = req.body
   const payload = { username }
   const token = jwt.sign(payload, process.env.APP_KEY, { expiresIn: '60m' })
   const verificationUrl = process.env.APP_URL + 'auth/forgot-password/success?code=' + token
-  console.log(payload)
-  console.log(token)
-  console.log(verificationUrl)
 
   try {
-    console.log('before')
     const mailUrl = await mailer(email, 'Forgot Password', verificationUrl)
-    console.log('after')
-    res.json({
-      status: true,
-      msg: 'A forgot password link has been sent to your email',
-      url: mailUrl
-    })
+    const data = { username, email, mailUrl }
+    ResponseTemplate.successResponse(res, 'A forgot password link has been sent to your email', data)
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to change password'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
+
 const changePassword = async (req, res) => {
-  console.log('Inside controllers/auth/changePassword')
   const code = req.query.code
   const { newPassword, confirmPassword } = req.body
-  console.log(newPassword, confirmPassword)
-  console.log(code)
 
   try {
     if (newPassword && confirmPassword) {
@@ -155,12 +128,8 @@ const changePassword = async (req, res) => {
         const verification = jwt.verify(code, process.env.APP_KEY)
         const username = verification.username
         const hashedPassword = bcrypt.hashSync(newPassword)
-        console.log(verification, username, hashedPassword)
         await usersModel.changePassword(username, hashedPassword)
-        res.json({
-          success: true,
-          msg: 'Success to change password'
-        })
+        ResponseTemplate.successResponse(res, 'Success to change password', { username })
       } else {
         res.json({
           success: false,
@@ -168,18 +137,14 @@ const changePassword = async (req, res) => {
         })
       }
     } else {
-      res.json({
-        success: false,
-        msg: 'Please provide new password and confirm password'
-      })
+      ResponseTemplate.failedResponse(res, 'Please provide new password and confirm password')
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to change password'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
+
+
 
 module.exports = { 
   register, 
