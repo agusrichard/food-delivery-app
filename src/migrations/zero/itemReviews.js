@@ -5,7 +5,7 @@ db.query(
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     item_id INT,
-    rating INT,
+    rating DECIMAL(3,2),
     review TEXT,
     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP,

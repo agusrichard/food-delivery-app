@@ -5,6 +5,8 @@ db.query(
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     item_id INT,
+    transaction_id INT,
+    quantity INT,
     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,

@@ -8,7 +8,7 @@ const { isAdminUser } = require('./src/middlewares/authUserToken')
 
 
 // Init App
-const app = express() 
+const app = express()
 
 
 // Middleware

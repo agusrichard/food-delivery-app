@@ -9,6 +9,7 @@ db.query(
     price INT,
     images TEXT,
     description TEXT,
+    quantity INT,
     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP
   );`,

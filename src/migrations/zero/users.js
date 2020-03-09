@@ -11,7 +11,7 @@ db.query(
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP,
     full_name VARCHAR(70),
     profile_picture TEXT,
-    balance INT,
+    balance INT DEFAULT 0,
     is_verified TINYINT DEFAULT 0,
     verification_code TEXT
   );`,
