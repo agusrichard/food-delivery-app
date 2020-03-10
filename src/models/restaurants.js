@@ -107,27 +107,27 @@ const deleteRestaurant = (id) => {
 }
 
 
-const getItemsByRestaurantId = (restaurantId) => {
-  console.log('Inside models/restaurants/getItemsByRestaurantId')
-  const { conditions, paginate } = paginationParams(req)
+const getItemsByRestaurantId = (restaurantId, req) => {
+  const { paginate, params } = paginationParams(req)
 
   const totalQuery = `
     SELECT COUNT(*) AS total
-    FROM restaurants
+    FROM items
     WHERE restaurant_id=${db.escape(restaurantId)}
-    ${conditions};
+    ${params.search && `AND ${params.search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`};
   `
 
   const paginateQuery = `
     SELECT *
-    FROM restaurants
-    ${conditions}
+    FROM items
+    WHERE restaurant_id=${db.escape(restaurantId)}
+    ${params.search && `AND ${params.search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
     ${paginate};
   `
 
   return new Promise((resolve, reject) => {
     db.query(totalQuery, (error, results, fields) => {
-      const total = results[0].total
+      const total = results[0] ? results[0].total : 0
       db.query(paginateQuery, (error, results, fields) => {
         if (error) reject(error)
         resolve({ results, total })
@@ -135,34 +135,6 @@ const getItemsByRestaurantId = (restaurantId) => {
     })
   })
 }
-
-
-// const getAllRestaurants = (req) => {
-//   const { conditions, paginate } = paginationParams(req)
-
-//   const totalQuery = `
-//     SELECT COUNT(*) AS total
-//     from restaurants
-//     ${conditions}
-//   `
-
-//   const paginateQuery = `
-//     SELECT *
-//     FROM restaurants
-//     ${conditions}
-//     ${paginate};
-//   `
-
-//   return new Promise((resolve, reject) => {
-//     db.query(totalQuery, (error, results, fields) => {
-//       const total = results[0].total
-//       db.query(paginateQuery, (error, results, fields) => {
-//         if (error) reject(error)
-//         resolve({ results, total })
-//       })
-//     })
-//   })
-// }
 
 
 const getRestaurantByUserId = (userId) => {

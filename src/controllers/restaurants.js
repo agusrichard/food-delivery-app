@@ -24,6 +24,7 @@ const createRestaurant = async (req, res) => {
   }
 }
 
+
 const getAllRestaurants = async (req, res) => { 
   try {
     const { results, total } = await RestaurantsModel.getAllRestaurants(req)
@@ -104,19 +105,16 @@ const deleteRestaurant = async (req, res) => {
 
 const getItemsByRestaurant = async (req, res) => {
   const { restaurantId } = req.params
-  console.log('Inside controllers/restaurants/getItemsByRestaurant')
-  console.log(restaurantId)
 
   try {
-    const items = await RestaurantsModel.getItemsByRestaurantId(parseInt(restaurantId), req)
-    console.log(items)
-    if (items) {
-      ResponseTemplate.successResponse(res, `Success to get items from restaurant id ${restaurantId}`, items)
+    const { results, total } = await RestaurantsModel.getItemsByRestaurantId(parseInt(restaurantId), req)
+    const pagination = paginate(req, `restaurants/${restaurantId}/items`, total)
+    if (results) {
+      ResponseTemplate.successResponse(res, 'Success to get items in this restaurant', { results, pagination })
     } else {
       ResponseTemplate.notFoundResponse(res)
     }
   } catch(err) {
-    console.log(err)
     ResponseTemplate.internalErrorResponse(res)
   }
 }
@@ -125,25 +123,15 @@ const getItemsByRestaurant = async (req, res) => {
 const getRestaurantByUser = async (req, res) => {
   const { userId } = req.auth
 
-  if (userId) {
-    try {
-      const restaurants = await RestaurantsModel.getRestaurantByUserId(userId)
-      console.log(restaurants)
-      res.json({
-        success: true,
-        data: restaurants
-      })
-    } catch(err) {
-      res.json({
-        success: false,
-        msg: 'Failed to get restaurant owned by user'
-      })
+  try {
+    const restaurants = await RestaurantsModel.getRestaurantByUserId(userId)
+    if (restaurants) {
+      ResponseTemplate.successResponse(res, 'Success to get all restaurants owned by user', { restaurants })
+    } else {
+      ResponseTemplate.notFoundResponse(res)
     }
-  } else {
-    res.json({
-      success: false,
-      msg: 'Failed to get restaurants owned by user'
-    })
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
