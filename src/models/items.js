@@ -3,8 +3,7 @@ const { paginationParams } = require('../utilities/pagination')
 
 
 const createItem = (data) => {
-  console.log('In models/items/createItem')
-  
+
   const query = `
     INSERT INTO items(restaurant_id, name, price, description, category_id, images)
     VALUES(
@@ -16,8 +15,6 @@ const createItem = (data) => {
       ${db.escape(data.itemImage)}
     );
   `
-
-  console.log(query)
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
@@ -55,7 +52,6 @@ const getAllItems = (req) => {
 
 
 const getItemById = (id) => {
-  console.log('In models/items/getItemById')
 
   const query = `
     SELECT *

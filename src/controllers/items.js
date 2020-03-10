@@ -2,27 +2,21 @@ const itemsModel = require('../models/items')
 const restaurantsModel = require('../models/restaurants')
 const categoriesModel = require('../models/categories')
 const { paginate } = require('../utilities/pagination')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 
 
 const createItem = async (req, res) => {
   const { userId, roleId } = req.auth
   const { restaurantId, name, price, description, category } = req.body
-  const itemImage = req.file.path.replace(/\\/g, '/')
-  console.log('Inside controllers/items/createItem')
-  console.log(userId, restaurantId, name, price, description)
-  console.log(itemImage)
-  
+  const itemImage = req.file ? req.file.path.replace(/\\/g, '/') : ''
 
-  if (restaurantId && name && price && description) {
-    try {
+  try {
+    if (restaurantId && name && price && description) {
       const restaurant = await restaurantsModel.getRestaurantById(restaurantId)
-      console.log(restaurant)
       if (restaurant) {
         let itemCategory = await categoriesModel.getCategoryByName(category)
-        console.log(itemCategory)
         if (itemCategory) {
           if (parseInt(userId) === restaurant.owner_id || parseInt(roleId) === 1) {
-            console.log(parseInt(userId) === restaurant.owner_id || parseInt(roleId) === 1)
             const data = {
               restaurantId, 
               name, 
@@ -32,42 +26,26 @@ const createItem = async (req, res) => {
               itemImage
             }
             await itemsModel.createItem(data)
-            res.json({
-              success: true,
-              msg: 'Item is created successfully'
-            })
+            ResponseTemplate.successResponse(res, 'Success to create item', data)
           } else {
-            res.json({
-              success: false,
-              msg: `Can't create item`
-            })
+            ResponseTemplate.failedResponse(res, 'Can\'t create item')
           }
         } else {
           await categoriesModel.createCategory(category)
           itemCategory = await categoriesModel.getCategoryByName(category)
           await itemsModel.createItem(restaurantId, name, price, description, itemCategory.id)
-          res.json({
-            success: true,
-            msg: 'Item is created successfully'
-          })
+          const data = { restaurantId, name, price, description, category, itemImage }
+          ResponseTemplate.successResponse(res, 'Success to create item', data)
         }
       } else {
-        res.json({
-          success: false,
-          msg: `No restaurant with id:${restaurantId} found`
-        })
+        ResponseTemplate.notFoundResponse(res)
       }
-    } catch(err) {
-      res.json({
-        success: false,
-        msg: 'Failed to create item'
-      })
+    } else {
+      ResponseTemplate.failedResponse(res, 
+        'Please provide restaurant id, name, price, description, category, and item image')
     }
-  } else {
-    res.json({
-      success: false,
-      msg: 'Please provide the required fields'
-    })
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -77,16 +55,9 @@ const getAllItems = async (req, res) => {
     const { results, total } = await itemsModel.getAllItems(req)
     const pagination = paginate(req, 'items', total)
 
-    res.send({
-      success: true,
-      data: results,
-      pagination 
-    })
+    ResponseTemplate.successResponse(res, 'Success to get all items', { results, pagination })
   } catch(err) {
-    res.send({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -95,21 +66,12 @@ const getItemById = async (req, res) => {
   try {
     const item = await itemsModel.getItemById(req.params.id)
     if (item) {
-      res.json({
-        success: true,
-        data: item
-      })
+      ResponseTemplate.successResponse(res, 'Success to get item', { item })
     } else {
-      res.json({
-        success: false,
-        msg: `Item with id ${req.params.id} is not found`
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
   } catch(err) {
-    res.send({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
