@@ -81,7 +81,8 @@ const updateItem = (id, data) => {
     SET 
       name=${db.escape(data.name)}, 
       price=${db.escape(data.price)}, 
-      description=${db.escape(data.description)}
+      description=${db.escape(data.description)},
+      images=${db.escape(data.itemImage)}
     WHERE id=${db.escape(id)};
   `
   
@@ -112,12 +113,43 @@ const deleteItem = (id) => {
   })
 }
 
+
+getReviews = (itemId, req) => {
+  const { paginate, params } = paginationParams(req)
+
+  const totalQuery = `
+    SELECT COUNT(*) AS total
+    FROM item_reviews
+    WHERE item_id=${db.escape(itemId)}
+    ${params.search && `AND ${params.search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`};
+  `
+
+  const paginateQuery = `
+    SELECT *
+    FROM item_reviews
+    WHERE item_id=${db.escape(itemId)}
+    ${params.search && `AND ${params.search.map(v => `${v.key} LIKE '%${v.value}%'`).join(' AND ')}`}
+    ${paginate};
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(totalQuery, (error, results, fields) => {
+      const total = results[0] ? results[0].total : 0
+      db.query(paginateQuery, (error, results, fields) => {
+        if (error) reject(error)
+        resolve({ results, total })
+      })
+    })
+  })
+}
+
 module.exports = { 
   createItem, 
   getAllItems, 
   getItemById, 
   updateItem, 
-  deleteItem 
+  deleteItem,
+  getReviews
 }
 
 

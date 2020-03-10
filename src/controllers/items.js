@@ -80,8 +80,9 @@ const updateItem = async (req, res) => {
   const itemId = req.params.id
   const { userId } = req.auth
   const { name, price, description } = req.body
+  const itemImage = req.file ? req.file.path.replace(/\\/g, '/') : ''
   console.log('Inside controllers/items/updateItem')
-  console.log(userId, itemId, name, price, description)
+  console.log(userId, itemId, name, price, description, itemImage)
   
   try {
     const item = await itemsModel.getItemById(itemId)
@@ -91,31 +92,19 @@ const updateItem = async (req, res) => {
         const data = {
           name: name || item.name,
           price: price || item.price,
-          description: description || item.description
+          description: description || item.description,
+          itemImage: itemImage || item.images
         }
         await itemsModel.updateItem(itemId, data)
-        res.send({
-          success: true,
-          msg: `Update item with id ${itemId} is success`
-        })
+        ResponseTemplate.successResponse(res, `Success to update item with id ${itemId}`, data)
       } else {
-        res.json({
-          success: false,
-          msg: 'Can\'t update this item'
-        })
+        ResponseTemplate.unauthorizedResponse(res)
       }
     } else {
-      res.json({
-        success: false,
-        msg: 'No item found'
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
-    
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to update item'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -133,27 +122,33 @@ const deleteItem = async (req, res) => {
       const restaurant = await restaurantsModel.getRestaurantById(item.restaurant_id)
       if (restaurant.owner_id === userId) {
         await itemsModel.deleteItem(itemId)
-        res.json({
-          success: true,
-          msg: `Delete item with id ${itemId} is success`
-        })
+        ResponseTemplate.successResponse(res, `Success to delete item with id ${itemId}`, { item })
       } else {
-        res.json({
-          success: false,
-          msg: 'Can\'t update this item'
-        })
+        ResponseTemplate.unauthorizedResponse(res)
       }
     } else {
-      res.json({
-        success: false,
-        msg: 'No item found'
-      })
+      ResponseTemplate.notFoundResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to delete item'
-    })
+    ResponseTemplate.internalErrorResponse(res)
+  }
+}
+
+const getReviewsByItem = async (req, res) => {
+  const itemId = req.params.id
+
+  try {
+    const item = await itemsModel.getItemById(itemId)
+
+    if (item) {
+      const { results, total } = await itemsModel.getReviews(item.id, req)
+      const pagination = paginate(req, `items/${itemId}/reviews`, total)
+      ResponseTemplate.successResponse(res, 'Success to get reviews of this item', { results, pagination })
+    } else {
+      ResponseTemplate.notFoundResponse(res)
+    }
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -163,5 +158,6 @@ module.exports = {
   getAllItems, 
   getItemById, 
   updateItem, 
-  deleteItem 
+  deleteItem,
+  getReviewsByItem 
 }
