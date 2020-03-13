@@ -4,7 +4,7 @@ const { register, login, verify, forgotPassword, changePassword } = require('../
 
 router.post('/register', register)
 router.post('/login', login)
-router.post('/verify', verify)
+router.get('/verify', verify)
 router.post('/forgot-password', forgotPassword)
 router.post('/forgot-password/success', changePassword)
 

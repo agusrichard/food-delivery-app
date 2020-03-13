@@ -16,7 +16,8 @@ const register = async (req, res) => {
   try {
     if (username && password && email && name) {
       const hashedPassword = bcrypt.hashSync(password)
-      const token = md5(username)
+      const payload = { username }
+      const token = jwt.sign(payload, process.env.APP_KEY, { expiresIn: '1d' })
       const verificationUrl = process.env.APP_URL + 'auth/verify?code=' + token
       const userData = { name, username, email, hashedPassword, token }
 
@@ -32,6 +33,7 @@ const register = async (req, res) => {
       ResponseTemplate.failedResponse(res, 'Please provide name, username, email, and password')
     }
   } catch(err) {
+    console.log(err)
     ResponseTemplate.internalErrorResponse(res)
   }
 }
@@ -76,8 +78,9 @@ const login = async (req, res) => {
 
 // Controller Verify Account
 const verify = async (req, res) => {
+  console.log('verify')
   const code = req.query.code
-  const { username } = req.body
+  const { username } = jwt.verify(code, process.env.APP_KEY)
 
   try {
     if (username) {
@@ -85,7 +88,7 @@ const verify = async (req, res) => {
       if (user) {
         if (user.verification_code == code) {
           await usersModel.verifyUser(username)
-          ResponseTemplate.successResponse(res, 'Success to verify account', {})
+          res.redirect(process.env.REACT_APP_URL + 'auth/login')
         } else {
           ResponseTemplate.failedResponse(res, 'Wrong verification code')
         }
@@ -106,7 +109,7 @@ const forgotPassword = async (req, res) => {
   const { username, email } = req.body
   const payload = { username }
   const token = jwt.sign(payload, process.env.APP_KEY, { expiresIn: '60m' })
-  const verificationUrl = process.env.APP_URL + 'auth/forgot-password/success?code=' + token
+  const verificationUrl = process.env.REACT_APP_URL + 'auth/forgot-password/success?code=' + token
 
   try {
     const mailUrl = await mailer(email, 'Forgot Password', verificationUrl)

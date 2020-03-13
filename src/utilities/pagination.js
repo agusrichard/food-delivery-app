@@ -5,7 +5,7 @@ require('dotenv').config()
 const paginationParams = (req) => {
   const params = {
     currentPage: parseInt(req.query.page) || 1,
-    perPage: parseInt(req.query.limit) || 5,
+    perPage: parseInt(req.query.limit) || 8,
     search: req.query.search || '',
     sort: req.query.sort || { key: 'id', value: 0 }
   }
