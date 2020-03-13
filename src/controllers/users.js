@@ -3,6 +3,7 @@ const { paginate, paginationParams } = require('../utilities/pagination')
 
 
 const userProfile = async (req, res) => {
+  console.log('userProfile')
   const { username } = req.auth
 
   try {
