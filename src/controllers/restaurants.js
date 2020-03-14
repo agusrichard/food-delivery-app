@@ -10,6 +10,7 @@ const createRestaurant = async (req, res) => {
   const { userId } = req.auth
   const { name, location, description } = req.body
   const logo = req.file ? req.file.path.replace(/\\/g, '/') : ''
+  console.log(userId, name, location, description, logo)
 
   try {
     if (name && location && description && logo) {
@@ -20,6 +21,7 @@ const createRestaurant = async (req, res) => {
       ResponseTemplate.failedResponse(res, 'Please provide the required fields')
     }
   } catch(err) {
+    console.log(err)
     ResponseTemplate.internalErrorResponse(res)
   }
 }
@@ -28,7 +30,7 @@ const createRestaurant = async (req, res) => {
 const getAllRestaurants = async (req, res) => { 
   try {
     const { results, total } = await RestaurantsModel.getAllRestaurants(req)
-    const pagination = paginate(req, 'items', total)
+    const pagination = paginate(req, 'restaurants', total)
     ResponseTemplate.successResponse(res, 'Success to get all restaurants', { results, pagination })
   } catch(err) {
     ResponseTemplate.internalErrorResponse(res)

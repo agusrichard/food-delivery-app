@@ -51,7 +51,7 @@ const paginate = (req, route, total) => {
   if (params.currentPage < totalPages) {
     const query = req.query
     query.page = params.currentPage + 1;
-    params.nextPage = process.env.APP_URL.concat(`${route}?${qs.stringify(query)}`)
+    params.nextPage = process.env.REACT_APP_URL.concat(`${route}?${qs.stringify(query)}`)
   } else {
     params.nextPage = null
   }
@@ -60,7 +60,7 @@ const paginate = (req, route, total) => {
   if (params.currentPage > 1) {
     const query = req.query
     query.page = params.currentPage - 1;
-    params.previousPage = process.env.APP_URL.concat(`${route}?${qs.stringify(query)}`)
+    params.previousPage = process.env.REACT_APP_URL.concat(`${route}?${qs.stringify(query)}`)
   } else {
     params.previousPage = null
   }
