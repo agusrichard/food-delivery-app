@@ -1,4 +1,5 @@
 const usersModel = require('../models/users')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 const { paginate, paginationParams } = require('../utilities/pagination')
 
 
@@ -9,21 +10,12 @@ const userProfile = async (req, res) => {
   try {
     const user = await usersModel.getUserByUsername(username)
     if (user) {
-      res.json({
-        success: true,
-        data: user
-      })
+      ResponseTemplate.successResponse(res, 'Success to get user profile', { user })
     } else {
-      res.json({
-        success: false,
-        msg: 'Not allowed'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to load user\'s profile'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -33,21 +25,12 @@ const userProfileById = async (req, res) => {
   try {
     const user = await usersModel.getUserById(id)
     if (user) {
-      res.json({
-        success: true,
-        data: user
-      })
+      ResponseTemplate.successResponse(res, 'Success to get user profile', { user })
     } else {
-      res.json({
-        success: false,
-        msg: 'Not allowed'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to load user\'s profile'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -57,66 +40,41 @@ const changeProfile = async (req, res) => {
   const { email, fullName } = req.body
   const profilePicture = req.file ? req.file.path.replace(/\\/g, '/') : ''
 
-  console.log('Inside controllers/users/changeProfile')
-  console.log(fullName)
-
   try {
     const user = await usersModel.getUserByUsername(username)
-    console.log(user)
     if (user) {
       const data = {
         email: email || user.email,
         fullName: fullName || user.full_name,
         profilePicture: profilePicture || user.profile_picture
       }
-      
-      console.log(data)
       await usersModel.changeProfile(user.id, data)
-      res.json({
-        success: true,
-        msg: 'Update user\'s profile is success'
-      })
+      ResponseTemplate.successResponse(res, 'Success to update user profile', data)
     } else {
-      res.json({
-        success: false,
-        msg: 'Not allowed'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to change user\'s profile'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
 
 const deleteUser = async (req, res) => {
   const { username } = req.auth
-  console.log(username)
 
   try {
     const user = await usersModel.getUserByUsername(username)
-    console.log(user)
     if (user) {
       await usersModel.deleteUser(user.id)
-      res.json({
-        success: true,
-        msg: 'Success to delete user'
-      })
+      ResponseTemplate.successResponse(res, 'Success to delete user account', {})
     } else {
-      res.json({
-        success: false,
-        msg: 'Not allowed'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to delete user'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
+
 
 const topUp = async (req, res) => {
   const { username } = req.auth
@@ -124,29 +82,17 @@ const topUp = async (req, res) => {
 
   try {
     const user = await usersModel.getUserByUsername(username)
-
     if (user) {
-      console.log('Inside controllers/users/topUp')
-      console.log(user.balance)
-      console.log(user.balance == null)
       let userBalance = user.balance == null ? 0 : user.balance
       let newBalance = parseInt(userBalance) + parseInt(amount)
       await usersModel.updateBalance(username, newBalance)
-      res.json({
-        success: true,
-        msg: 'Topup success'
-      })
+      ResponseTemplate.successResponse(res, 'Success to topup', { amount, newBalance })
     } else {
-      res.json({
-        success: false,
-        msg: 'Not allowed'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to topup'
-    })
+    console.log(err)
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -155,17 +101,9 @@ const getAllUsers = async (req, res) => {
   try {
     const { results, total } = await usersModel.getAllUsers(req)
     const pagination = paginate(req, 'users', total)
-
-    res.send({
-      success: true,
-      data: results,
-      pagination 
-    })
+    ResponseTemplate.successResponse(res, 'Success to get all users', { results, pagination })
   } catch(err) {
-    res.send({
-      success: false,
-      msg: 'There is an error occured ' + err
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 

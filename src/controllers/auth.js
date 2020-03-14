@@ -134,10 +134,7 @@ const changePassword = async (req, res) => {
         await usersModel.changePassword(username, hashedPassword)
         ResponseTemplate.successResponse(res, 'Success to change password', { username })
       } else {
-        res.json({
-          success: false,
-          msg: 'New password and confirm password must match'
-        })
+        ResponseTemplate.failedResponse(res, 'New password and confirm password must match')
       }
     } else {
       ResponseTemplate.failedResponse(res, 'Please provide new password and confirm password')
