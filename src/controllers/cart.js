@@ -1,5 +1,6 @@
 const cartModel = require('../models/cart')
 const usersModel = require('../models/users')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 
 
 const getItemsInCart = async (req, res) => {
@@ -23,10 +24,7 @@ const getItemsInCart = async (req, res) => {
       })
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to load items in cart',
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -43,10 +41,8 @@ const addItemsToCart = async (req, res) => {
       msg: 'Success to add items to cart'
     })
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to add items to cart'
-    })
+    console.log(err)
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -90,10 +86,7 @@ const checkout = async (req, res) => {
       })
     }
   } catch(err) {
-    res.json({
-      success: false,
-      msg: 'Failed to check out the cart'
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 

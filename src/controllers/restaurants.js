@@ -57,6 +57,9 @@ const updateRestaurant = async (req, res) => {
   const { userId, roleId } = req.auth
   const { name, location, description } = req.body
   const logo = req.file ? req.file.path.replace(/\\/g, '/') : ''
+  console.log(id, userId, roleId)
+  console.log(name, location, description)
+  console.log(logo)
 
   try {
     const restaurant = await RestaurantsModel.getRestaurantById(id)
@@ -106,7 +109,9 @@ const deleteRestaurant = async (req, res) => {
 
 
 const getItemsByRestaurant = async (req, res) => {
+  console.log('getItemsByRestaurant')
   const { restaurantId } = req.params
+  console.log(restaurantId)
 
   try {
     const { results, total } = await RestaurantsModel.getItemsByRestaurantId(parseInt(restaurantId), req)
