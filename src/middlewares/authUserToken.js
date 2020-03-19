@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const ResponseTemplate = require('../utilities/jsonFormatting')
 require('dotenv').config()
 
 
@@ -8,21 +9,14 @@ const isUserAuthenticated = (req, res, next) => {
   if (token.startsWith('Bearer')) {
     token = token.slice(7, token.length)
   } else {
-    res.send({
-      success: false,
-      msg: 'Unauthorized'
-    })
+    ResponseTemplate.unauthorizedResponse(res)
   }
 
   try {
     req.auth = jwt.verify(token, process.env.APP_KEY)
-    
     next()
   } catch(err) {
-    res.send({
-      success: false,
-      msg: err.message
-    })
+    ResponseTemplate.internalErrorResponse(res)
   }
 }
 
@@ -32,10 +26,7 @@ const isAdminUser = (req, res, next) => {
   if (token.startsWith('Bearer')) {
     token = token.slice(7, token.length)
   } else {
-    res.send({
-      success: false,
-      msg: 'Unauthorized'
-    })
+    ResponseTemplate.unauthorizedResponse(res)
   }
 
   try {
@@ -45,16 +36,10 @@ const isAdminUser = (req, res, next) => {
     if ( parseInt(roleId) === 1 ) {
       next()
     } else {
-      res.json({
-        success: false,
-        msg: 'Only admin allowed to access'
-      })
+      ResponseTemplate.unauthorizedResponse(res)
     }
   } catch(err) {
-    res.send({
-      success: false,
-      msg: err.message
-    })
+    ResponseTemplate.internalErrorResponse
   }
 }
 
