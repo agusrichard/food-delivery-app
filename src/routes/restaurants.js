@@ -6,7 +6,7 @@ const RestaurantsController = require('../controllers/restaurants')
 
 
 
-router.get('/', RestaurantsController.getAllRestaurants)
+router.get('/', RestaurantsController.getAllRestaurantsNoPaginate)
 
 router.post('/', [isUserAuthenticated, multerHelper('restaurants').single('logo')], RestaurantsController.createRestaurant)
 

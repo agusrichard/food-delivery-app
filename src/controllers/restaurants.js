@@ -37,6 +37,15 @@ const getAllRestaurants = async (req, res) => {
   }
 }
 
+const getAllRestaurantsNoPaginate = async (req, res) => {
+  try {
+    const results = await RestaurantsModel.getAllRestaurantsNoPaginate()
+    ResponseTemplate.successResponse(res, 'Success to get all restaurants', results)
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
+  }
+}
+
 
 const getRestaurantById = async (req, res) => {
   try {
@@ -57,9 +66,6 @@ const updateRestaurant = async (req, res) => {
   const { userId, roleId } = req.auth
   const { name, location, description } = req.body
   const logo = req.file ? req.file.path.replace(/\\/g, '/') : ''
-  console.log(id, userId, roleId)
-  console.log(name, location, description)
-  console.log(logo)
 
   try {
     const restaurant = await RestaurantsModel.getRestaurantById(id)
@@ -150,5 +156,6 @@ module.exports = {
   updateRestaurant,
   deleteRestaurant,
   getItemsByRestaurant,
-  getRestaurantByUser
+  getRestaurantByUser,
+  getAllRestaurantsNoPaginate
 }

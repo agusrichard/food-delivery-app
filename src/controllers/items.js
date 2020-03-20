@@ -61,6 +61,16 @@ const getAllItems = async (req, res) => {
   }
 }
 
+const getAllItemsNoPaginate = async (req, res) => {
+  try {
+    const items = await itemsModel.getAllItemsNoPaginate()
+
+    ResponseTemplate.successResponse(res, 'Success to get all items', items)
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
+  }
+}
+
 
 const getItemById = async (req, res) => {
   try {
@@ -159,5 +169,6 @@ module.exports = {
   getItemById, 
   updateItem, 
   deleteItem,
-  getReviewsByItem 
+  getReviewsByItem,
+  getAllItemsNoPaginate
 }

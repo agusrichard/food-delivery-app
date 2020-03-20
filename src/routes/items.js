@@ -6,7 +6,7 @@ const ItemsController = require('../controllers/items')
 
 router.post('/', [isUserAuthenticated, multerHelper('items').single('itemImage')], ItemsController.createItem)
 
-router.get('/', ItemsController.getAllItems)
+router.get('/', ItemsController.getAllItemsNoPaginate)
 
 router.get('/:id/reviews', ItemsController.getReviewsByItem)
 

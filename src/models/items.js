@@ -50,6 +50,23 @@ const getAllItems = (req) => {
   })
 }
 
+const getAllItemsNoPaginate = () => {
+
+  const query = `
+    SELECT *
+    FROM items
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      if (error) reject(error)
+      resolve(results)
+    })
+  })
+
+  
+}
+
 
 const getItemById = (id) => {
 
@@ -149,7 +166,8 @@ module.exports = {
   getItemById, 
   updateItem, 
   deleteItem,
-  getReviews
+  getReviews,
+  getAllItemsNoPaginate
 }
 
 

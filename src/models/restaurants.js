@@ -50,6 +50,21 @@ const getAllRestaurants = (req) => {
   })
 }
 
+const getAllRestaurantsNoPaginate = () => {
+
+  const query = `
+    SELECT *
+    FROM restaurants
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      if (error) reject(error)
+        resolve(results)
+    })
+  })
+}
+
 const getRestaurantById = (id) => {
 
   const query = `
@@ -162,5 +177,6 @@ module.exports = {
   updateRestaurant,
   deleteRestaurant,
   getItemsByRestaurantId,
-  getRestaurantByUserId
+  getRestaurantByUserId,
+  getAllRestaurantsNoPaginate
 }
