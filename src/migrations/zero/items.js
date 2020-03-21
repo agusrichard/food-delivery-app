@@ -9,7 +9,7 @@ db.query(
     price INT,
     images TEXT,
     description TEXT,
-    quantity INT,
+    is_available TINYINT DEFAULT 1,
     date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     date_updated DATETIME ON UPDATE CURRENT_TIMESTAMP
   );`,

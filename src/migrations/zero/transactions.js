@@ -11,6 +11,6 @@ db.query(
     );`,
   (error, results, fields) => {
     if (error) throw error
-    else console.log('users table is created successfully')
+    else console.log('transactions table is created successfully')
   }
 )

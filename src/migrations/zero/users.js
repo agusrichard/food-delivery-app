@@ -13,7 +13,8 @@ db.query(
     profile_picture TEXT,
     balance INT DEFAULT 0,
     is_verified TINYINT DEFAULT 0,
-    verification_code TEXT
+    verification_code TEXT,
+    address TEXT
   );`,
   (error, results, fields) => {
     if (error) throw error

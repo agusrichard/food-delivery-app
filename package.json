@@ -4,7 +4,9 @@
   "description": "First week project of arkademy bootcamp",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "dev": "nodemon index",
+    "migrate": "node ./src/migrations/index.js"
   },
   "keywords": [
     "Node.js",
