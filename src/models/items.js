@@ -18,6 +18,7 @@ const createItem = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(query, (error, results, fields) => {
+      console.log(error)
       if (error) reject(error)
       else resolve()
     })

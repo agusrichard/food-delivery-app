@@ -37,7 +37,7 @@ const userProfileById = async (req, res) => {
 
 const changeProfile = async (req, res) => {
   const { username } = req.auth
-  const { email, fullName } = req.body
+  const { email, fullName, address } = req.body
   const profilePicture = req.file ? req.file.path.replace(/\\/g, '/') : ''
 
   try {
@@ -46,7 +46,8 @@ const changeProfile = async (req, res) => {
       const data = {
         email: email || user.email,
         fullName: fullName || user.full_name,
-        profilePicture: profilePicture || user.profile_picture
+        profilePicture: profilePicture || user.profile_picture,
+        address: address || user.address
       }
       await usersModel.changeProfile(user.id, data)
       ResponseTemplate.successResponse(res, 'Success to update user profile', data)

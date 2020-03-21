@@ -89,7 +89,8 @@ const changeProfile = (userId, data) => {
     SET 
       email=${db.escape(data.email)}, 
       full_name=${db.escape(data.fullName)}, 
-      profile_picture=${db.escape(data.profilePicture)}
+      profile_picture=${db.escape(data.profilePicture)},
+      address=${db.escape(data.address)}
     WHERE id=${db.escape(userId)};
   `
 
