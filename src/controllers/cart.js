@@ -50,40 +50,19 @@ const addItemsToCart = async (req, res) => {
 const checkout = async (req, res) => {
   const { userId, username } = req.auth
   console.log('Inside controllers/cart/checkout')
+  const { expenses, listOfItems } = req.body
 
   try {
-    const { results, total } = await cartModel.getItemsInCart(userId)
     const user = await usersModel.getUserByUsername(username)
-    console.log(results)
-    console.log(total)
-    console.log(user)
-
-    if (user && results) {
-      const expenses = results.map(item => item.price).reduce((prev, curr) => prev + curr)
-
-      if (user.balance >= expenses) {
-        const newBalance = user.balance - expenses
-
-        await usersModel.updateBalance(username, newBalance)
-        await cartModel.deleteCart(userId)
-        res.json({
-          success: true,
-          total_items: total,
-          currentBalance: newBalance,
-          expenses,
-          items: results 
-        })
-      } else {
-        res.json({
-          success: false,
-          msg: 'Your balance less than your expenses'
-        })
-      }
+    if (user) {
+      const transaction = await cartModel.setTransaction(userId, expenses)
+      console.log(transaction)
+      listOfItems.forEach(async item => await cartModel.setCart(userId, item.itemId, item.quantity, transaction.transactionId))
+      const newBalance = user.balance - expenses
+      usersModel.updateBalance(username, newBalance)
+      ResponseTemplate.successResponse(res, 'Success to checkout', {})
     } else {
-      res.json({
-        success: false,
-        msg: 'Can\'t checkout the cart'
-      })
+      ResponseTemplate.failedResponse(res, 'You can\'t buy the items')
     }
   } catch(err) {
     ResponseTemplate.internalErrorResponse(res)

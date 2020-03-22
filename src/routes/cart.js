@@ -6,6 +6,6 @@ router.get('/', isUserAuthenticated, getItemsInCart)
 
 router.post('/', isUserAuthenticated, addItemsToCart)
 
-router.get('/checkout', isUserAuthenticated, checkout)
+router.post('/checkout', isUserAuthenticated, checkout)
 
 module.exports = router
