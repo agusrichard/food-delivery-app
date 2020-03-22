@@ -118,11 +118,32 @@ const deleteReview = (id) => {
   })
 }
 
+const getReviewByItemId = (itemId) => {
+  console.log('In models/reviews/getReviewById')
+
+  const query = `
+    SELECT *
+    FROM item_reviews
+    LEFT JOIN users
+    ON item_reviews.user_id = users.id
+    WHERE item_id=${db.escape(parseInt(itemId))};
+  `
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      console.log(results)
+      if (error) reject(error)
+      else resolve(results)
+    })
+  })
+} 
+
 
 module.exports = { 
   createReview,
   getAllReviews,
   getReviewById,
   updateReview,
-  deleteReview
+  deleteReview,
+  getReviewByItemId
 }

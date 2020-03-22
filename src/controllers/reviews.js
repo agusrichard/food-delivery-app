@@ -1,3 +1,4 @@
+const ResponseTemplate = require('../utilities/jsonFormatting')
 const reviewsModel = require('../models/reviews')
 const { paginate } = require('../utilities/pagination')
 
@@ -157,11 +158,24 @@ const deleteReview = async (req, res) => {
 }
 
 
+const getReviewByItemId = async (req, res) => {
+  const itemId = req.params.itemId
+  console.log('getReviewByItemId')
+  try {
+    const reviews = await reviewsModel.getReviewByItemId(itemId)
+    console.log(reviews)
+    ResponseTemplate.successResponse(res, 'Success to get reviews by item', reviews)
+  } catch(err) {
+    ResponseTemplate.internalErrorResponse(res)
+  }
+}
+
 
 module.exports = { 
   createReview,
   getAllReviews,
   getReviewById,
   updateReview,
-  deleteReview
+  deleteReview,
+  getReviewByItemId
 }
