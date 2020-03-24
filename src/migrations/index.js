@@ -1,4 +1,15 @@
-const db = require('../config/db')
+const mysql = require('mysql')
+require('dotenv').config()
+
+const db = mysql.createConnection({
+  host: process.env.DB_SERVER,
+  user: process.env.DB_USER,
+  // database: process.env.DB_NAME,
+  password: process.env.DB_PASS,
+  multipleStatements: true
+})
+
+db.connect(() => console.log('Database Connected'))
 
 function  migrate() {
   db.query(
@@ -23,7 +34,7 @@ function  migrate() {
   require('./zero/itemCarts')
   require('./zero/itemReviews')
 
-  return null
+  db.end()
 }
 
 
