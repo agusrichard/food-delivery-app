@@ -57,6 +57,7 @@ const getAllItems = async (req, res) => {
 
     ResponseTemplate.successResponse(res, 'Success to get all items', { results, pagination })
   } catch(err) {
+    console.log(err)
     ResponseTemplate.internalErrorResponse(res)
   }
 }

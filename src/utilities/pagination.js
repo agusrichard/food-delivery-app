@@ -2,12 +2,12 @@ const qs = require('qs')
 require('dotenv').config()
 
 
-const paginationParams = (req) => {
+const paginationParams = (req, isItem) => {
   const params = {
     currentPage: parseInt(req.query.page) || 1,
     perPage: parseInt(req.query.limit) || 8,
     search: req.query.search || '',
-    sort: req.query.sort || { key: 'id', value: 0 }
+    sort: req.query.sort || { key: isItem ? 'items.id' : 'id', value: 0 }
   }
 
   // Create search parameters

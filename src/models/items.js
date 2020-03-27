@@ -27,18 +27,22 @@ const createItem = (data) => {
 
 
 const getAllItems = (req) => {
-  const { conditions, paginate } = paginationParams(req)
+  const { conditions, paginate } = paginationParams(req, true)
 
   return new Promise((resolve, reject) => {
     db.query(
       `SELECT COUNT(*) AS total
       from items
+      LEFT JOIN item_reviews
+      ON items.id = item_reviews.item_id
       ${conditions}`,
       (error, results, fields) => {
         const total = results[0].total
         db.query(
           `SELECT *
            FROM items
+           LEFT JOIN item_reviews
+           ON items.id = item_reviews.item_id
            ${conditions}
            ${paginate};`,
            (error, results, fields) => {
