@@ -1,9 +1,6 @@
-<h1 align="center">Lecker --- Food Delivery App</h1>
+<h1 align="center">Lecker: Food Delivery App</h1>
 
-
-
-Note App is a simple note application specially for backend only. Built with NodeJs using the ExpressJs Framework.
-Express.js is a web application framework for Node.js. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+This repository serves as the backend side of Food Delivery Application which using React in frontend side and React Native in mobile version.
 ## Built With
 [![Express.js](https://img.shields.io/badge/Express.js-4.x-orange.svg?style=rounded-square)](https://expressjs.com/en/starter/installing.html)
 [![Node.js](https://img.shields.io/badge/Node.js-v.10.16-green.svg?style=rounded-square)](https://nodejs.org/)
@@ -34,30 +31,3 @@ PASS= // default
 DATABASE=note
 NODE_ENV=development node server.js
 ```
-
-## End Point
-**1. GET**
-* `/notes`
-* `/notes?search=lorem&sort=ASC&limit=5&page=1`
-* `/note/:id` (Get note by id)
-* `/categories`
-* `/categories?search=Diary`
-* `/category/:id` (Get category by id)
-
-
-**2. POST**
-* `/note`
-    * ``` { "title": "Party", "note": "Herman's Party at 19.00", "category": 1 } ```
-
-* `/category`
-    * ``` { "categoryName": "Category6" } ```
-
-**3. PATCH**
-* `/note/:id` (Update note by id)
-   * ``` { "title": "Party", "note": "Herman's Party at 18.00", "category": 2 } ```
-* `/category/:id` (Update category by id)
-   * ``` { "categoryName": "Category8" } ```
-
-**4. DELETE**
-* `/note/:id` (Delete note by id)
-* `/category/:id` (Delete category by id)
